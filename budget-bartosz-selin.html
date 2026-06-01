@@ -788,7 +788,7 @@ async function addTransaction() {
   document.getElementById('btnAdd').disabled = true;
   showLoading('Saving...');
   try {
-    await sheetsRequest(`https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/${sheet}!A:I:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`, 'POST', { values: [row] });
+    await sheetsRequest(`https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/${sheet}!A1:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`, 'POST', { values: [row] });
     document.getElementById('inputAmount').value = '';
     document.getElementById('inputDesc').value = '';
     document.getElementById('inputNote').value = '';
@@ -1004,7 +1004,7 @@ async function saveScanTransaction() {
   showLoading('Saving ' + rows.length + ' items...');
   try {
     await sheetsRequest(
-      `https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/${sheet}!A:I:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
+      `https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/${sheet}!A1:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
       'POST', { values: rows }
     );
     await loadTransactions();
