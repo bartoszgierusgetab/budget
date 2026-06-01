@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Budget B&S">
+<title>Budget Bartosz & Selin</title>
+
+<style>
+  /* ===== ZMIENNE I RESET ===== */
+  :root {
+    --bg: #0f0f13;
+    --bg2: #1a1a22;
+    --bg3: #222230;
+    --border: #2e2e3e;
+    --accent: #7c6af7;
+    --accent2: #a78bfa;
+    --green: #34d399;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --text: #f0f0f5;
+    --text2: #9090a8;
+    --text3: #5a5a72;
+    --bartosz: #7c6af7;
+    --selin: #f472b6;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    max-width: 480px;
+    margin: 0 auto;
+    padding-bottom: 90px;
+  }
+
+  /* ===== EKRAN LOGOWANIA ===== */
+  #loginScreen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .login-logo {
+    width: 72px; height: 72px;
+    background: linear-gradient(135deg, var(--accent), var(--selin));
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; margin-bottom: 1.5rem;
+  }
+
+  .login-title { font-size: 26px; font-weight: 700; margin-bottom: 0.5rem; }
+  .login-sub { color: var(--text2); font-size: 15px; margin-bottom: 2.5rem; }
+
+  .btn-google {
+    display: flex; align-items: center; gap: 12px;
+    background: white; color: #1a1a1a;
+    border: none; border-radius: 12px;
+    padding: 14px 24px; font-size: 16px; font-weight: 600;
+    cursor: pointer; width: 100%; justify-content: center;
+    transition: opacity 0.2s;
+  }
+  .btn-google:active { opacity: 0.8; }
+  .btn-google img { width: 20px; height: 20px; }
+
+  /* ===== NAWIGACJA DOLNA ===== */
+  #nav {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 480px;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    display: flex; padding: 8px 0 20px;
+    z-index: 100;
+  }
+
+  .nav-btn {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; gap: 4px;
+    background: none; border: none; color: var(--text3);
+    font-size: 10px; cursor: pointer; padding: 6px 0;
+    transition: color 0.2s;
+  }
+  .nav-btn.active { color: var(--accent2); }
+  .nav-btn svg { width: 22px; height: 22px; }
+
+  /* ===== NAGŁÓWEK ===== */
+  .page-header {
+    padding: 56px 20px 16px;
+    background: var(--bg);
+    position: sticky; top: 0; z-index: 50;
+    border-bottom: 1px solid var(--border);
+  }
+  .page-header h1 { font-size: 22px; font-weight: 700; }
+  .page-header .sub { color: var(--text2); font-size: 13px; margin-top: 2px; }
+
+  /* ===== KARTY ===== */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin: 0 16px 12px;
+  }
+
+  .card-title {
+    font-size: 12px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text2); margin-bottom: 10px;
+  }
+
+  /* ===== DASHBOARD ===== */
+  #pageDashboard { display: none; }
+
+  .month-selector {
+    display: flex; align-items: center; justify-content: space-between;
+    margin: 16px 16px 8px;
+  }
+  .month-label { font-size: 18px; font-weight: 700; }
+  .month-nav {
+    background: var(--bg3); border: 1px solid var(--border);
+    color: var(--text); border-radius: 8px;
+    width: 32px; height: 32px; display: flex;
+    align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px;
+  }
+
+  .stats-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px; margin: 0 16px 12px;
+  }
+
+  .stat-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px;
+  }
+  .stat-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; }
+  .stat-value { font-size: 22px; font-weight: 700; }
+  .stat-value.bartosz { color: var(--bartosz); }
+  .stat-value.selin { color: var(--selin); }
+  .stat-value.total { color: var(--text); }
+  .stat-value.debt { color: var(--yellow); }
+
+  .debt-card {
+    background: linear-gradient(135deg, #1e1a3a, #1a2232);
+    border: 1px solid #3a2e6e;
+    border-radius: var(--radius); padding: 16px;
+    margin: 0 16px 12px; text-align: center;
+  }
+  .debt-label { font-size: 13px; color: var(--text2); margin-bottom: 6px; }
+  .debt-amount { font-size: 28px; font-weight: 800; color: var(--yellow); }
+  .debt-desc { font-size: 13px; color: var(--text2); margin-top: 4px; }
+
+  /* Wykres kategorii */
+  .cat-bar-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 10px;
+  }
+  .cat-bar-label { font-size: 13px; min-width: 80px; }
+  .cat-bar-track {
+    flex: 1; height: 8px; background: var(--bg3);
+    border-radius: 4px; overflow: hidden;
+  }
+  .cat-bar-fill { height: 100%; border-radius: 4px; background: var(--accent); transition: width 0.4s; }
+  .cat-bar-val { font-size: 12px; color: var(--text2); min-width: 56px; text-align: right; }
+
+  /* ===== FORMULARZ DODAWANIA ===== */
+  #pageAdd { display: none; }
+
+  .form-group { margin: 0 16px 12px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; display: block; }
+
+  .form-input, .form-select, .form-textarea {
+    width: 100%; background: var(--bg2);
+    border: 1px solid var(--border); border-radius: 10px;
+    color: var(--text); font-size: 16px;
+    padding: 12px 14px; outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  .form-input:focus, .form-select:focus { border-color: var(--accent); }
+  .form-select { cursor: pointer; }
+
+  .person-toggle {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px; margin: 0 16px 12px;
+  }
+  .person-btn {
+    padding: 12px; border-radius: 10px;
+    border: 2px solid var(--border);
+    background: var(--bg2); color: var(--text2);
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    transition: all 0.2s; text-align: center;
+  }
+  .person-btn.active-bartosz {
+    border-color: var(--bartosz); color: var(--bartosz);
+    background: #1e1a3a;
+  }
+  .person-btn.active-selin {
+    border-color: var(--selin); color: var(--selin);
+    background: #2a1a2e;
+  }
+
+  .type-toggle {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px; margin: 0 16px 12px;
+  }
+  .type-btn {
+    padding: 10px; border-radius: 10px;
+    border: 2px solid var(--border);
+    background: var(--bg2); color: var(--text2);
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .type-btn.active-wydatek { border-color: var(--red); color: var(--red); background: #2a1a1a; }
+  .type-btn.active-przychod { border-color: var(--green); color: var(--green); background: #1a2a22; }
+
+  .split-toggle {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px; margin: 0 16px 12px;
+  }
+  .split-btn {
+    padding: 10px; border-radius: 10px;
+    border: 2px solid var(--border);
+    background: var(--bg2); color: var(--text2);
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: all 0.2s; text-align: center;
+  }
+  .split-btn.active { border-color: var(--accent); color: var(--accent2); background: #1e1a3a; }
+
+  .btn-primary {
+    width: calc(100% - 32px); margin: 8px 16px 16px;
+    background: var(--accent); color: white;
+    border: none; border-radius: 12px;
+    padding: 16px; font-size: 16px; font-weight: 700;
+    cursor: pointer; transition: opacity 0.2s;
+  }
+  .btn-primary:active { opacity: 0.85; }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* ===== SKANER PARAGONÓW ===== */
+  #pageScan { display: none; }
+
+  .scan-zone {
+    margin: 16px;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 32px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .scan-zone:active { border-color: var(--accent); }
+  .scan-icon { font-size: 48px; margin-bottom: 12px; }
+  .scan-text { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .scan-sub { font-size: 13px; color: var(--text2); }
+
+  #scanPreview {
+    margin: 0 16px 12px;
+    border-radius: var(--radius);
+    overflow: hidden; display: none;
+  }
+  #scanPreview img { width: 100%; border-radius: var(--radius); }
+
+  .scan-result {
+    margin: 0 16px 12px;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px;
+    display: none;
+  }
+  .scan-result-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+
+  .scan-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 0; border-bottom: 1px solid var(--border);
+  }
+  .scan-item:last-child { border-bottom: none; }
+  .scan-item-name { font-size: 14px; flex: 1; }
+  .scan-item-cat {
+    font-size: 11px; background: var(--bg3);
+    border-radius: 6px; padding: 3px 8px; margin: 0 8px;
+    color: var(--text2);
+  }
+  .scan-item-price { font-size: 14px; font-weight: 600; min-width: 60px; text-align: right; }
+
+  .scan-total {
+    display: flex; justify-content: space-between;
+    padding: 12px 0 0; font-weight: 700; font-size: 16px;
+    border-top: 1px solid var(--border); margin-top: 4px;
+  }
+
+  .btn-scan {
+    width: calc(100% - 32px); margin: 0 16px 12px;
+    background: var(--bg2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-scan:active { background: var(--bg3); }
+
+  .loader {
+    display: none; text-align: center;
+    padding: 24px; color: var(--text2);
+  }
+  .loader-spinner {
+    width: 32px; height: 32px; margin: 0 auto 12px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ===== HISTORIA ===== */
+  #pageHistory { display: none; }
+
+  .filter-row {
+    display: flex; gap: 8px; padding: 12px 16px;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .filter-row::-webkit-scrollbar { display: none; }
+
+  .filter-chip {
+    flex-shrink: 0; background: var(--bg2);
+    border: 1px solid var(--border); border-radius: 20px;
+    padding: 6px 14px; font-size: 13px; color: var(--text2);
+    cursor: pointer; transition: all 0.2s; white-space: nowrap;
+  }
+  .filter-chip.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+  .trans-list { padding: 0 16px; }
+
+  .trans-item {
+    display: flex; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+  .trans-item:last-child { border-bottom: none; }
+
+  .trans-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+
+  .trans-info { flex: 1; min-width: 0; }
+  .trans-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .trans-meta { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+  .trans-right { text-align: right; flex-shrink: 0; }
+  .trans-amount { font-size: 15px; font-weight: 700; }
+  .trans-amount.wydatek { color: var(--red); }
+  .trans-amount.przychod { color: var(--green); }
+  .trans-person { font-size: 11px; margin-top: 2px; }
+  .trans-person.bartosz { color: var(--bartosz); }
+  .trans-person.selin { color: var(--selin); }
+
+  .empty-state {
+    text-align: center; padding: 48px 24px;
+    color: var(--text3); font-size: 14px;
+  }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+
+  /* ===== USTAWIENIA ===== */
+  #pageSettings { display: none; }
+
+  .settings-section { margin: 0 16px 20px; }
+  .settings-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text2); margin-bottom: 10px; }
+
+  .settings-row {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px;
+    margin-bottom: 8px;
+  }
+  .settings-label { font-size: 13px; color: var(--text2); margin-bottom: 6px; }
+  .settings-input {
+    width: 100%; background: var(--bg3);
+    border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text); font-size: 14px; padding: 10px 12px;
+    outline: none; font-family: monospace;
+  }
+  .settings-input:focus { border-color: var(--accent); }
+
+  .btn-save {
+    width: 100%; background: var(--accent); color: white;
+    border: none; border-radius: 10px;
+    padding: 14px; font-size: 15px; font-weight: 700;
+    cursor: pointer; margin-top: 6px;
+  }
+
+  .user-card {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px; margin-bottom: 12px;
+  }
+  .user-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 18px; flex-shrink: 0;
+  }
+  .user-avatar.bartosz { background: #1e1a3a; color: var(--bartosz); }
+  .user-avatar.selin { background: #2a1a2e; color: var(--selin); }
+  .user-name { font-size: 16px; font-weight: 600; }
+  .user-email { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+  .btn-logout {
+    width: 100%; background: var(--bg2);
+    border: 1px solid var(--border); color: var(--red);
+    border-radius: 10px; padding: 14px;
+    font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 8px;
+  }
+
+  /* ===== TOAST ===== */
+  #toast {
+    position: fixed; bottom: 100px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--bg3); border: 1px solid var(--border);
+    color: var(--text); padding: 12px 20px;
+    border-radius: 10px; font-size: 14px; font-weight: 500;
+    opacity: 0; transition: all 0.3s; z-index: 200;
+    white-space: nowrap; pointer-events: none;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #toast.success { border-color: var(--green); color: var(--green); }
+  #toast.error { border-color: var(--red); color: var(--red); }
+
+  /* ===== LOADING OVERLAY ===== */
+  #loadingOverlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 300; display: none;
+  }
+  .loading-box {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 16px; padding: 28px 36px; text-align: center;
+  }
+  .loading-box .loader-spinner { display: block; }
+  .loading-text { color: var(--text2); font-size: 14px; margin-top: 12px; }
+</style>
+</head>
+<body>
+
+<!-- ===== EKRAN LOGOWANIA ===== -->
+<div id="loginScreen">
+  <div class="login-logo">💰</div>
+  <div class="login-title">Budget B&S</div>
+  <div class="login-sub">Wspólne finanse Bartosz & Selin</div>
+  <button class="btn-google" onclick="signIn()">
+    <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+    Zaloguj się przez Google
+  </button>
+</div>
+
+<!-- ===== APLIKACJA GŁÓWNA ===== -->
+<div id="app" style="display:none;">
+
+  <!-- NAWIGACJA -->
+  <nav id="nav">
+    <button class="nav-btn active" onclick="showPage('dashboard')" id="nav-dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </button>
+    <button class="nav-btn" onclick="showPage('add')" id="nav-add">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Dodaj
+    </button>
+    <button class="nav-btn" onclick="showPage('scan')" id="nav-scan">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V5a1 1 0 011-1h2M4 17v2a1 1 0 001 1h2M17 4h2a1 1 0 011 1v2M17 20h2a1 1 0 001-1v-2"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg>
+      Skan
+    </button>
+    <button class="nav-btn" onclick="showPage('history')" id="nav-history">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+      Historia
+    </button>
+    <button class="nav-btn" onclick="showPage('settings')" id="nav-settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      Ustawienia
+    </button>
+  </nav>
+
+  <!-- ===== DASHBOARD ===== -->
+  <div id="pageDashboard">
+    <div class="page-header">
+      <h1>Podsumowanie</h1>
+      <div class="sub" id="dashboardUser">Ładowanie...</div>
+    </div>
+
+    <div class="month-selector">
+      <button class="month-nav" onclick="changeMonth(-1)">‹</button>
+      <div class="month-label" id="monthLabel">Czerwiec 2026</div>
+      <button class="month-nav" onclick="changeMonth(1)">›</button>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Bartosz wydał</div>
+        <div class="stat-value bartosz" id="statBartosz">0 zł</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Selin wydała</div>
+        <div class="stat-value selin" id="statSelin">0 zł</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Razem wydano</div>
+        <div class="stat-value total" id="statTotal">0 zł</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Wspólne wydatki</div>
+        <div class="stat-value" id="statCommon">0 zł</div>
+      </div>
+    </div>
+
+    <div class="debt-card" id="debtCard">
+      <div class="debt-label" id="debtLabel">Rozliczenie</div>
+      <div class="debt-amount" id="debtAmount">0 zł</div>
+      <div class="debt-desc" id="debtDesc">Jesteście kwita 🎉</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Wydatki per kategoria</div>
+      <div id="catBars"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Ostatnie transakcje</div>
+      <div id="recentTrans"></div>
+    </div>
+  </div>
+
+  <!-- ===== DODAJ TRANSAKCJĘ ===== -->
+  <div id="pageAdd">
+    <div class="page-header">
+      <h1>Nowa transakcja</h1>
+    </div>
+
+    <div style="height: 12px;"></div>
+
+    <!-- Osoba -->
+    <label class="form-label" style="margin: 0 16px 6px; display: block;">Kto płaci?</label>
+    <div class="person-toggle">
+      <button class="person-btn active-bartosz" id="btnBartosz" onclick="selectPerson('Bartosz')">Bartosz</button>
+      <button class="person-btn" id="btnSelin" onclick="selectPerson('Selin')">Selin</button>
+    </div>
+
+    <!-- Typ -->
+    <label class="form-label" style="margin: 0 16px 6px; display: block;">Typ</label>
+    <div class="type-toggle">
+      <button class="type-btn active-wydatek" id="btnWydatek" onclick="selectType('wydatek')">− Wydatek</button>
+      <button class="type-btn" id="btnPrzychod" onclick="selectType('przychod')">+ Przychód</button>
+    </div>
+
+    <!-- Podział -->
+    <label class="form-label" style="margin: 0 16px 6px; display: block;">Podział</label>
+    <div class="split-toggle">
+      <button class="split-btn active" id="btnWspolne" onclick="selectSplit('wspólne')">🤝 Wspólne</button>
+      <button class="split-btn" id="btnOsobiste" onclick="selectSplit('osobiste')">👤 Osobiste</button>
+    </div>
+
+    <!-- Kwota -->
+    <div class="form-group">
+      <label class="form-label">Kwota (PLN)</label>
+      <input type="number" class="form-input" id="inputKwota" placeholder="0.00" step="0.01" min="0" inputmode="decimal">
+    </div>
+
+    <!-- Kategoria -->
+    <div class="form-group">
+      <label class="form-label">Kategoria</label>
+      <select class="form-select" id="inputKategoria">
+        <option value="Jedzenie">🛒 Jedzenie</option>
+        <option value="Chemia">🧴 Chemia / Drogeria</option>
+        <option value="Wyjście">🍽️ Wyjście / Restauracje</option>
+        <option value="Transport">🚗 Transport</option>
+        <option value="Dom">🏠 Dom / Rachunki</option>
+        <option value="Zdrowie">💊 Zdrowie</option>
+        <option value="Rozrywka">🎉 Rozrywka</option>
+        <option value="Ubrania">👗 Ubrania</option>
+        <option value="Podróże">✈️ Podróże</option>
+        <option value="Inne">📦 Inne</option>
+      </select>
+    </div>
+
+    <!-- Opis -->
+    <div class="form-group">
+      <label class="form-label">Opis</label>
+      <input type="text" class="form-input" id="inputOpis" placeholder="np. Frisco — zakupy tygodniowe">
+    </div>
+
+    <!-- Data -->
+    <div class="form-group">
+      <label class="form-label">Data</label>
+      <input type="date" class="form-input" id="inputData">
+    </div>
+
+    <!-- Notatka -->
+    <div class="form-group">
+      <label class="form-label">Notatka (opcjonalna)</label>
+      <input type="text" class="form-input" id="inputNotatka" placeholder="Dodatkowe info...">
+    </div>
+
+    <button class="btn-primary" onclick="addTransaction()" id="btnAdd">
+      Zapisz transakcję
+    </button>
+  </div>
+
+  <!-- ===== SKANER PARAGONÓW ===== -->
+  <div id="pageScan">
+    <div class="page-header">
+      <h1>Skan paragonu</h1>
+      <div class="sub">Zrób zdjęcie lub wgraj screenshot</div>
+    </div>
+
+    <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
+
+    <div class="scan-zone" onclick="document.getElementById('fileInput').click()">
+      <div class="scan-icon">📷</div>
+      <div class="scan-text">Dotknij aby wybrać zdjęcie</div>
+      <div class="scan-sub">Paragon, screenshot ze sklepu, Frisco, Glovo...</div>
+    </div>
+
+    <div id="scanPreview">
+      <img id="previewImg" src="" alt="Podgląd">
+    </div>
+
+    <div class="loader" id="scanLoader">
+      <div class="loader-spinner"></div>
+      <div>Claude analizuje paragon...</div>
+    </div>
+
+    <div class="scan-result" id="scanResult">
+      <div class="scan-result-title">Wykryte pozycje</div>
+      <div id="scanItems"></div>
+      <div class="scan-total">
+        <span>Suma</span>
+        <span id="scanTotalAmount">0 zł</span>
+      </div>
+    </div>
+
+    <!-- Formularz po skanowaniu -->
+    <div id="scanForm" style="display:none;">
+      <label class="form-label" style="margin: 0 16px 6px; display: block;">Kto płacił?</label>
+      <div class="person-toggle">
+        <button class="person-btn active-bartosz" id="scanBtnBartosz" onclick="selectScanPerson('Bartosz')">Bartosz</button>
+        <button class="person-btn" id="scanBtnSelin" onclick="selectScanPerson('Selin')">Selin</button>
+      </div>
+
+      <label class="form-label" style="margin: 0 16px 6px; display: block;">Podział</label>
+      <div class="split-toggle">
+        <button class="split-btn active" id="scanBtnWspolne" onclick="selectScanSplit('wspólne')">🤝 Wspólne</button>
+        <button class="split-btn" id="scanBtnOsobiste" onclick="selectScanSplit('osobiste')">👤 Osobiste</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Kategoria</label>
+        <select class="form-select" id="scanKategoria">
+          <option value="Jedzenie">🛒 Jedzenie</option>
+          <option value="Chemia">🧴 Chemia / Drogeria</option>
+          <option value="Wyjście">🍽️ Wyjście / Restauracje</option>
+          <option value="Transport">🚗 Transport</option>
+          <option value="Dom">🏠 Dom / Rachunki</option>
+          <option value="Zdrowie">💊 Zdrowie</option>
+          <option value="Rozrywka">🎉 Rozrywka</option>
+          <option value="Ubrania">👗 Ubrania</option>
+          <option value="Podróże">✈️ Podróże</option>
+          <option value="Inne">📦 Inne</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Opis</label>
+        <input type="text" class="form-input" id="scanOpis" placeholder="np. Frisco — zakupy">
+      </div>
+
+      <button class="btn-primary" onclick="saveScanTransaction()" id="btnSaveScan">
+        Zapisz do budżetu
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== HISTORIA ===== -->
+  <div id="pageHistory">
+    <div class="page-header">
+      <h1>Historia</h1>
+    </div>
+
+    <div class="filter-row">
+      <button class="filter-chip active" onclick="filterHistory('wszystkie')" id="filter-wszystkie">Wszystkie</button>
+      <button class="filter-chip" onclick="filterHistory('Bartosz')" id="filter-Bartosz">Bartosz</button>
+      <button class="filter-chip" onclick="filterHistory('Selin')" id="filter-Selin">Selin</button>
+      <button class="filter-chip" onclick="filterHistory('Jedzenie')" id="filter-Jedzenie">🛒 Jedzenie</button>
+      <button class="filter-chip" onclick="filterHistory('Chemia')" id="filter-Chemia">🧴 Chemia</button>
+      <button class="filter-chip" onclick="filterHistory('Wyjście')" id="filter-Wyjście">🍽️ Wyjście</button>
+      <button class="filter-chip" onclick="filterHistory('Transport')" id="filter-Transport">🚗 Transport</button>
+      <button class="filter-chip" onclick="filterHistory('Dom')" id="filter-Dom">🏠 Dom</button>
+      <button class="filter-chip" onclick="filterHistory('Zdrowie')" id="filter-Zdrowie">💊 Zdrowie</button>
+      <button class="filter-chip" onclick="filterHistory('Rozrywka')" id="filter-Rozrywka">🎉 Rozrywka</button>
+    </div>
+
+    <div class="trans-list" id="transList"></div>
+  </div>
+
+  <!-- ===== USTAWIENIA ===== -->
+  <div id="pageSettings">
+    <div class="page-header">
+      <h1>Ustawienia</h1>
+    </div>
+
+    <div style="height: 16px;"></div>
+
+    <div class="settings-section">
+      <div class="settings-title">Zalogowany jako</div>
+      <div class="user-card" id="userCard">
+        <div class="user-avatar bartosz" id="userAvatar">B</div>
+        <div>
+          <div class="user-name" id="userName">Bartosz</div>
+          <div class="user-email" id="userEmail">-</div>
+        </div>
+      </div>
+      <div class="user-card">
+        <div class="user-avatar selin">S</div>
+        <div>
+          <div class="user-name">Selin</div>
+          <div class="user-email">selinkarakus33@gmail.com</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-title">Google Sheets</div>
+      <div class="settings-row">
+        <div class="settings-label">Spreadsheet ID</div>
+        <input type="text" class="settings-input" id="settingsSheetId" placeholder="1abc...xyz">
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-title">Anthropic API (skanowanie paragonów)</div>
+      <div class="settings-row">
+        <div class="settings-label">Klucz API (sk-ant-...)</div>
+        <input type="password" class="settings-input" id="settingsAnthropicKey" placeholder="sk-ant-api03-...">
+      </div>
+    </div>
+
+    <div style="margin: 0 16px;">
+      <button class="btn-save" onclick="saveSettings()">Zapisz ustawienia</button>
+      <button class="btn-logout" onclick="signOut()">Wyloguj się</button>
+    </div>
+  </div>
+
+</div><!-- koniec #app -->
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- LOADING OVERLAY -->
+<div id="loadingOverlay">
+  <div class="loading-box">
+    <div class="loader-spinner"></div>
+    <div class="loading-text" id="loadingText">Zapisywanie...</div>
+  </div>
+</div>
+
+<!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<!-- Google API Client -->
+<script src="https://apis.google.com/js/api.js"></script>
+
+<script>
+// ===== KONFIGURACJA =====
+const CLIENT_ID = '678355265949-sgdj5qan88mm09sse4phmo80dn0a964n.apps.googleusercontent.com';
+const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
+
+// ===== STAN APLIKACJI =====
+let state = {
+  user: null,
+  accessToken: null,
+  sheetId: localStorage.getItem('sheetId') || '1mgmENMueQu4uoRPiMnU_Ov7hLcMAfHR6MLYqlSmGYTs',
+  anthropicKey: localStorage.getItem('anthropicKey') || '',
+  transactions: [],
+  currentPage: 'dashboard',
+  selectedPerson: 'Bartosz',
+  selectedType: 'wydatek',
+  selectedSplit: 'wspólne',
+  scanPerson: 'Bartosz',
+  scanSplit: 'wspólne',
+  scanTotal: 0,
+  scanDescription: '',
+  currentMonth: new Date().getMonth(),
+  currentYear: new Date().getFullYear(),
+  historyFilter: 'wszystkie',
+};
+
+// ===== NAZWY MIESIĘCY =====
+const MONTHS = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
+
+// ===== IKONY KATEGORII =====
+const CAT_ICONS = {
+  'Jedzenie': '🛒', 'Chemia': '🧴', 'Wyjście': '🍽️',
+  'Transport': '🚗', 'Dom': '🏠', 'Zdrowie': '💊',
+  'Rozrywka': '🎉', 'Ubrania': '👗', 'Podróże': '✈️', 'Inne': '📦'
+};
+
+const CAT_COLORS = {
+  'Jedzenie': '#34d399', 'Chemia': '#a78bfa', 'Wyjście': '#f472b6',
+  'Transport': '#60a5fa', 'Dom': '#fbbf24', 'Zdrowie': '#f87171',
+  'Rozrywka': '#fb923c', 'Ubrania': '#e879f9', 'Podróże': '#2dd4bf', 'Inne': '#94a3b8'
+};
+
+// ===== LOGOWANIE GOOGLE =====
+function signIn() {
+  const client = google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: SCOPES,
+    callback: async (response) => {
+      if (response.error) {
+        showToast('Błąd logowania: ' + response.error, 'error');
+        return;
+      }
+      state.accessToken = response.access_token;
+
+      // Pobierz info o użytkowniku
+      try {
+        const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: 'Bearer ' + state.accessToken }
+        });
+        const info = await res.json();
+        state.user = info;
+        onLoginSuccess();
+      } catch(e) {
+        showToast('Błąd pobierania danych użytkownika', 'error');
+      }
+    }
+  });
+  client.requestAccessToken();
+}
+
+function onLoginSuccess() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+
+  // Ustal osobę na podstawie emaila
+  const email = state.user.email;
+  if (email === 'selinkarakus33@gmail.com') {
+    state.selectedPerson = 'Selin';
+    state.scanPerson = 'Selin';
+  } else {
+    state.selectedPerson = 'Bartosz';
+    state.scanPerson = 'Bartosz';
+  }
+
+  // Ustaw UI użytkownika
+  document.getElementById('dashboardUser').textContent =
+    'Cześć ' + (state.user.given_name || state.user.email) + '! 👋';
+  document.getElementById('userName').textContent = state.user.name || state.user.email;
+  document.getElementById('userEmail').textContent = state.user.email;
+  if (state.user.email === 'selinkarakus33@gmail.com') {
+    document.getElementById('userAvatar').className = 'user-avatar selin';
+    document.getElementById('userAvatar').textContent = 'S';
+  }
+
+  // Załaduj ustawienia
+  document.getElementById('settingsSheetId').value = state.sheetId;
+  document.getElementById('settingsAnthropicKey').value = state.anthropicKey;
+
+  // Ustaw datę domyślną formularza
+  document.getElementById('inputData').value = new Date().toISOString().split('T')[0];
+
+  // Ustaw domyślną osobę w formularzu
+  selectPerson(state.selectedPerson);
+
+  // Zainicjuj arkusz i wczytaj dane
+  initSheetAndLoad();
+}
+
+function signOut() {
+  google.accounts.oauth2.revoke(state.accessToken, () => {});
+  state.user = null;
+  state.accessToken = null;
+  state.transactions = [];
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+}
+
+// ===== INICJALIZACJA ARKUSZA =====
+async function initSheetAndLoad() {
+  showLoading('Ładowanie danych...');
+  try {
+    await ensureSheetsExist();
+    await loadTransactions();
+    updateDashboard();
+  } catch(e) {
+    console.error('Błąd inicjalizacji:', e);
+    showToast('Błąd połączenia z Google Sheets', 'error');
+  }
+  hideLoading();
+}
+
+// Upewnij się że arkusze "Transakcje" i "Budżety" istnieją
+async function ensureSheetsExist() {
+  const res = await sheetsRequest(`https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}`, 'GET');
+  const sheets = res.sheets.map(s => s.properties.title);
+
+  const toCreate = [];
+  if (!sheets.includes('Transakcje')) toCreate.push({ properties: { title: 'Transakcje' } });
+  if (!sheets.includes('Budżety')) toCreate.push({ properties: { title: 'Budżety' } });
+
+  if (toCreate.length > 0) {
+    await sheetsRequest(
+      `https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}:batchUpdate`,
+      'POST',
+      { requests: toCreate.map(s => ({ addSheet: s })) }
+    );
+  }
+
+  // Sprawdź czy nagłówki istnieją
+  const headers = await sheetsRequest(
+    `https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/Transakcje!A1:I1`,
+    'GET'
+  );
+
+  if (!headers.values || headers.values.length === 0) {
+    // Dodaj nagłówki
+    await sheetsRequest(
+      `https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/Transakcje!A1:I1?valueInputOption=RAW`,
+      'PUT',
+      { values: [['ID', 'Data', 'Osoba', 'Kategoria', 'Opis', 'Kwota', 'Typ', 'Podział', 'Notatka']] }
+    );
+  }
+}
+
+// ===== WCZYTAJ TRANSAKCJE =====
+async function loadTransactions() {
+  const res = await sheetsRequest(
+    `https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/Transakcje!A2:I`,
+    'GET'
+  );
+
+  state.transactions = [];
+  if (res.values) {
+    state.transactions = res.values.map(row => ({
+      id: row[0] || '',
+      data: row[1] || '',
+      osoba: row[2] || '',
+      kategoria: row[3] || '',
+      opis: row[4] || '',
+      kwota: parseFloat(row[5]) || 0,
+      typ: row[6] || 'wydatek',
+      podzial: row[7] || 'wspólne',
+      notatka: row[8] || ''
+    }));
+  }
+}
+
+// ===== DODAJ TRANSAKCJĘ =====
+async function addTransaction() {
+  const kwota = parseFloat(document.getElementById('inputKwota').value);
+  const opis = document.getElementById('inputOpis').value.trim();
+  const kategoria = document.getElementById('inputKategoria').value;
+  const data = document.getElementById('inputData').value;
+  const notatka = document.getElementById('inputNotatka').value.trim();
+
+  if (!kwota || kwota <= 0) { showToast('Wpisz poprawną kwotę', 'error'); return; }
+  if (!opis) { showToast('Wpisz opis', 'error'); return; }
+  if (!data) { showToast('Wybierz datę', 'error'); return; }
+
+  const row = [
+    Date.now().toString(),
+    data,
+    state.selectedPerson,
+    kategoria,
+    opis,
+    kwota.toString(),
+    state.selectedType,
+    state.selectedSplit,
+    notatka
+  ];
+
+  document.getElementById('btnAdd').disabled = true;
+  showLoading('Zapisywanie...');
+
+  try {
+    await sheetsRequest(
+      `https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/Transakcje!A:I:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
+      'POST',
+      { values: [row] }
+    );
+
+    // Resetuj formularz
+    document.getElementById('inputKwota').value = '';
+    document.getElementById('inputOpis').value = '';
+    document.getElementById('inputNotatka').value = '';
+    document.getElementById('inputData').value = new Date().toISOString().split('T')[0];
+
+    await loadTransactions();
+    updateDashboard();
+    showToast('Zapisano! ✓', 'success');
+    showPage('dashboard');
+  } catch(e) {
+    console.error('Błąd zapisu:', e);
+    showToast('Błąd zapisu do Sheets', 'error');
+  }
+
+  document.getElementById('btnAdd').disabled = false;
+  hideLoading();
+}
+
+// ===== SKANER PARAGONÓW (CLAUDE API) =====
+function handleImageUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  // Pokaż podgląd
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const base64 = e.target.result.split(',')[1];
+    const mimeType = file.type;
+
+    document.getElementById('previewImg').src = e.target.result;
+    document.getElementById('scanPreview').style.display = 'block';
+    document.getElementById('scanResult').style.display = 'none';
+    document.getElementById('scanForm').style.display = 'none';
+
+    await analyzeScan(base64, mimeType);
+  };
+  reader.readAsDataURL(file);
+}
+
+async function analyzeScan(base64, mimeType) {
+  if (!state.anthropicKey) {
+    showToast('Dodaj klucz Anthropic API w Ustawieniach', 'error');
+    return;
+  }
+
+  document.getElementById('scanLoader').style.display = 'block';
+
+  const prompt = `Przeanalizuj ten paragon lub screenshot zakupów. 
+Zwróć TYLKO JSON w tym formacie (bez żadnego innego tekstu):
+{
+  "sklep": "nazwa sklepu lub serwisu",
+  "pozycje": [
+    {"nazwa": "nazwa produktu", "kwota": 12.50, "kategoria": "Jedzenie"}
+  ],
+  "suma": 45.00,
+  "kategoria_glowna": "Jedzenie",
+  "opis": "krótki opis np. Frisco - zakupy"
+}
+
+Kategorie: Jedzenie, Chemia, Wyjście, Transport, Dom, Zdrowie, Rozrywka, Ubrania, Podróże, Inne.
+Zasady: produkty spożywcze → Jedzenie, kosmetyki/drogeria → Chemia, restauracje/delivery → Wyjście.
+Jeśli nie możesz odczytać kwoty, wpisz 0.`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': state.anthropicKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: [
+            {
+              type: 'image',
+              source: { type: 'base64', media_type: mimeType, data: base64 }
+            },
+            { type: 'text', text: prompt }
+          ]
+        }]
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.error) throw new Error(data.error.message);
+
+    const text = data.content[0].text.trim();
+    // Usuń ewentualne backticki
+    const clean = text.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(clean);
+
+    displayScanResult(parsed);
+  } catch(e) {
+    console.error('Błąd skanowania:', e);
+    showToast('Błąd analizy: ' + e.message, 'error');
+  }
+
+  document.getElementById('scanLoader').style.display = 'none';
+}
+
+function displayScanResult(data) {
+  const itemsEl = document.getElementById('scanItems');
+  itemsEl.innerHTML = '';
+
+  if (data.pozycje && data.pozycje.length > 0) {
+    data.pozycje.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'scan-item';
+      div.innerHTML = `
+        <span class="scan-item-name">${item.nazwa}</span>
+        <span class="scan-item-cat">${item.kategoria || ''}</span>
+        <span class="scan-item-price">${item.kwota.toFixed(2)} zł</span>
+      `;
+      itemsEl.appendChild(div);
+    });
+  }
+
+  const suma = data.suma || 0;
+  document.getElementById('scanTotalAmount').textContent = suma.toFixed(2) + ' zł';
+  document.getElementById('scanResult').style.display = 'block';
+
+  // Ustaw dane w formularzu
+  state.scanTotal = suma;
+  state.scanDescription = data.opis || data.sklep || 'Zakupy';
+
+  document.getElementById('scanOpis').value = state.scanDescription;
+
+  // Ustaw kategorię
+  const sel = document.getElementById('scanKategoria');
+  if (data.kategoria_glowna) {
+    for (let i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].value === data.kategoria_glowna) {
+        sel.selectedIndex = i;
+        break;
+      }
+    }
+  }
+
+  document.getElementById('scanForm').style.display = 'block';
+}
+
+async function saveScanTransaction() {
+  if (!state.scanTotal || state.scanTotal <= 0) {
+    showToast('Brak kwoty do zapisania', 'error');
+    return;
+  }
+
+  const row = [
+    Date.now().toString(),
+    new Date().toISOString().split('T')[0],
+    state.scanPerson,
+    document.getElementById('scanKategoria').value,
+    document.getElementById('scanOpis').value || state.scanDescription,
+    state.scanTotal.toString(),
+    'wydatek',
+    state.scanSplit,
+    'ze skanera'
+  ];
+
+  document.getElementById('btnSaveScan').disabled = true;
+  showLoading('Zapisywanie...');
+
+  try {
+    await sheetsRequest(
+      `https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/Transakcje!A:I:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
+      'POST',
+      { values: [row] }
+    );
+
+    await loadTransactions();
+    updateDashboard();
+    showToast('Paragon zapisany! ✓', 'success');
+
+    // Reset
+    document.getElementById('scanResult').style.display = 'none';
+    document.getElementById('scanPreview').style.display = 'none';
+    document.getElementById('scanForm').style.display = 'none';
+    document.getElementById('fileInput').value = '';
+    state.scanTotal = 0;
+
+    showPage('dashboard');
+  } catch(e) {
+    console.error('Błąd zapisu:', e);
+    showToast('Błąd zapisu', 'error');
+  }
+
+  document.getElementById('btnSaveScan').disabled = false;
+  hideLoading();
+}
+
+// ===== DASHBOARD =====
+function updateDashboard() {
+  const year = state.currentYear;
+  const month = state.currentMonth;
+
+  document.getElementById('monthLabel').textContent = MONTHS[month] + ' ' + year;
+
+  // Filtruj transakcje dla danego miesiąca
+  const monthTrans = state.transactions.filter(t => {
+    if (!t.data) return false;
+    const d = new Date(t.data);
+    return d.getFullYear() === year && d.getMonth() === month && t.typ === 'wydatek';
+  });
+
+  // Sumy per osoba
+  const bartoszSum = monthTrans
+    .filter(t => t.osoba === 'Bartosz')
+    .reduce((s, t) => s + t.kwota, 0);
+  const selinSum = monthTrans
+    .filter(t => t.osoba === 'Selin')
+    .reduce((s, t) => s + t.kwota, 0);
+  const totalSum = bartoszSum + selinSum;
+
+  // Wspólne wydatki
+  const commonSum = monthTrans
+    .filter(t => t.podzial === 'wspólne')
+    .reduce((s, t) => s + t.kwota, 0);
+
+  document.getElementById('statBartosz').textContent = bartoszSum.toFixed(2) + ' zł';
+  document.getElementById('statSelin').textContent = selinSum.toFixed(2) + ' zł';
+  document.getElementById('statTotal').textContent = totalSum.toFixed(2) + ' zł';
+  document.getElementById('statCommon').textContent = commonSum.toFixed(2) + ' zł';
+
+  // Rozliczenie wspólnych wydatków
+  const commonBartosz = monthTrans
+    .filter(t => t.podzial === 'wspólne' && t.osoba === 'Bartosz')
+    .reduce((s, t) => s + t.kwota, 0);
+  const commonSelin = monthTrans
+    .filter(t => t.podzial === 'wspólne' && t.osoba === 'Selin')
+    .reduce((s, t) => s + t.kwota, 0);
+
+  const half = commonSum / 2;
+  const diff = commonBartosz - half;
+
+  if (Math.abs(diff) < 0.01) {
+    document.getElementById('debtAmount').textContent = '0 zł';
+    document.getElementById('debtDesc').textContent = 'Jesteście kwita 🎉';
+  } else if (diff > 0) {
+    document.getElementById('debtAmount').textContent = diff.toFixed(2) + ' zł';
+    document.getElementById('debtDesc').textContent = 'Selin jest winna Bartoszowi';
+  } else {
+    document.getElementById('debtAmount').textContent = Math.abs(diff).toFixed(2) + ' zł';
+    document.getElementById('debtDesc').textContent = 'Bartosz jest winny Selin';
+  }
+
+  // Wykres kategorii
+  const catSums = {};
+  monthTrans.forEach(t => {
+    catSums[t.kategoria] = (catSums[t.kategoria] || 0) + t.kwota;
+  });
+
+  const sortedCats = Object.entries(catSums).sort((a, b) => b[1] - a[1]);
+  const maxVal = sortedCats.length > 0 ? sortedCats[0][1] : 1;
+
+  const catEl = document.getElementById('catBars');
+  catEl.innerHTML = '';
+
+  if (sortedCats.length === 0) {
+    catEl.innerHTML = '<div style="color: var(--text3); font-size: 14px; text-align: center; padding: 16px;">Brak wydatków w tym miesiącu</div>';
+  } else {
+    sortedCats.forEach(([cat, val]) => {
+      const pct = (val / maxVal * 100).toFixed(1);
+      const color = CAT_COLORS[cat] || '#7c6af7';
+      catEl.innerHTML += `
+        <div class="cat-bar-row">
+          <div class="cat-bar-label">${CAT_ICONS[cat] || '📦'} ${cat}</div>
+          <div class="cat-bar-track">
+            <div class="cat-bar-fill" style="width:${pct}%; background:${color}"></div>
+          </div>
+          <div class="cat-bar-val">${val.toFixed(2)} zł</div>
+        </div>
+      `;
+    });
+  }
+
+  // Ostatnie 5 transakcji
+  const recent = [...state.transactions]
+    .sort((a, b) => b.id - a.id)
+    .slice(0, 5);
+  renderTransactions(recent, 'recentTrans');
+}
+
+function changeMonth(dir) {
+  state.currentMonth += dir;
+  if (state.currentMonth > 11) { state.currentMonth = 0; state.currentYear++; }
+  if (state.currentMonth < 0) { state.currentMonth = 11; state.currentYear--; }
+  updateDashboard();
+}
+
+// ===== HISTORIA =====
+function filterHistory(filter) {
+  state.historyFilter = filter;
+
+  // Aktywny chip
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  const chip = document.getElementById('filter-' + filter);
+  if (chip) chip.classList.add('active');
+
+  let filtered = [...state.transactions].sort((a, b) => b.id - a.id);
+
+  if (filter === 'Bartosz' || filter === 'Selin') {
+    filtered = filtered.filter(t => t.osoba === filter);
+  } else if (filter !== 'wszystkie') {
+    filtered = filtered.filter(t => t.kategoria === filter);
+  }
+
+  renderTransactions(filtered, 'transList');
+}
+
+function renderTransactions(trans, targetId) {
+  const el = document.getElementById(targetId);
+  if (!trans || trans.length === 0) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">💸</div>Brak transakcji</div>';
+    return;
+  }
+
+  el.innerHTML = trans.map(t => `
+    <div class="trans-item">
+      <div class="trans-icon" style="background: ${CAT_COLORS[t.kategoria] || '#2e2e3e'}22;">
+        ${CAT_ICONS[t.kategoria] || '📦'}
+      </div>
+      <div class="trans-info">
+        <div class="trans-name">${t.opis || t.kategoria}</div>
+        <div class="trans-meta">${t.data} · ${t.kategoria} · ${t.podzial}</div>
+      </div>
+      <div class="trans-right">
+        <div class="trans-amount ${t.typ}">${t.typ === 'wydatek' ? '−' : '+'}${t.kwota.toFixed(2)} zł</div>
+        <div class="trans-person ${t.osoba.toLowerCase()}">${t.osoba}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== NAWIGACJA =====
+function showPage(page) {
+  const pages = ['dashboard', 'add', 'scan', 'history', 'settings'];
+  pages.forEach(p => {
+    const el = document.getElementById('page' + p.charAt(0).toUpperCase() + p.slice(1));
+    if (el) el.style.display = p === page ? 'block' : 'none';
+    const nav = document.getElementById('nav-' + p);
+    if (nav) nav.classList.toggle('active', p === page);
+  });
+
+  state.currentPage = page;
+
+  if (page === 'history') {
+    filterHistory(state.historyFilter);
+  }
+  if (page === 'dashboard') {
+    updateDashboard();
+  }
+}
+
+// ===== SELEKTORY FORMULARZA =====
+function selectPerson(person) {
+  state.selectedPerson = person;
+  document.getElementById('btnBartosz').className = 'person-btn' + (person === 'Bartosz' ? ' active-bartosz' : '');
+  document.getElementById('btnSelin').className = 'person-btn' + (person === 'Selin' ? ' active-selin' : '');
+}
+
+function selectType(type) {
+  state.selectedType = type;
+  document.getElementById('btnWydatek').className = 'type-btn' + (type === 'wydatek' ? ' active-wydatek' : '');
+  document.getElementById('btnPrzychod').className = 'type-btn' + (type === 'przychod' ? ' active-przychod' : '');
+}
+
+function selectSplit(split) {
+  state.selectedSplit = split;
+  document.getElementById('btnWspolne').className = 'split-btn' + (split === 'wspólne' ? ' active' : '');
+  document.getElementById('btnOsobiste').className = 'split-btn' + (split === 'osobiste' ? ' active' : '');
+}
+
+function selectScanPerson(person) {
+  state.scanPerson = person;
+  document.getElementById('scanBtnBartosz').className = 'person-btn' + (person === 'Bartosz' ? ' active-bartosz' : '');
+  document.getElementById('scanBtnSelin').className = 'person-btn' + (person === 'Selin' ? ' active-selin' : '');
+}
+
+function selectScanSplit(split) {
+  state.scanSplit = split;
+  document.getElementById('scanBtnWspolne').className = 'split-btn' + (split === 'wspólne' ? ' active' : '');
+  document.getElementById('scanBtnOsobiste').className = 'split-btn' + (split === 'osobiste' ? ' active' : '');
+}
+
+// ===== USTAWIENIA =====
+function saveSettings() {
+  const sheetId = document.getElementById('settingsSheetId').value.trim();
+  const anthropicKey = document.getElementById('settingsAnthropicKey').value.trim();
+
+  if (sheetId) {
+    state.sheetId = sheetId;
+    localStorage.setItem('sheetId', sheetId);
+  }
+  if (anthropicKey) {
+    state.anthropicKey = anthropicKey;
+    localStorage.setItem('anthropicKey', anthropicKey);
+  }
+
+  showToast('Ustawienia zapisane ✓', 'success');
+}
+
+// ===== GOOGLE SHEETS API =====
+async function sheetsRequest(url, method, body) {
+  const options = {
+    method,
+    headers: {
+      'Authorization': 'Bearer ' + state.accessToken,
+      'Content-Type': 'application/json'
+    }
+  };
+  if (body) options.body = JSON.stringify(body);
+
+  const res = await fetch(url, options);
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error?.message || 'Błąd API');
+  }
+  return res.json();
+}
+
+// ===== HELPERS =====
+function showToast(msg, type = '') {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'show' + (type ? ' ' + type : '');
+  setTimeout(() => { toast.className = ''; }, 3000);
+}
+
+function showLoading(text = 'Ładowanie...') {
+  document.getElementById('loadingText').textContent = text;
+  document.getElementById('loadingOverlay').style.display = 'flex';
+}
+
+function hideLoading() {
+  document.getElementById('loadingOverlay').style.display = 'none';
+}
+
+// ===== START =====
+// Pokaż dashboard na start
+showPage('dashboard');
+</script>
+</body>
+</html>
