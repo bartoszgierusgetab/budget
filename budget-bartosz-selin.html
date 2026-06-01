@@ -772,14 +772,12 @@
 </div>
 
 <!-- Google Identity Services -->
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<!-- Google API Client -->
-<script src="https://apis.google.com/js/api.js"></script>
+<script src="https://accounts.google.com/gsi/client"></script>
 
 <script>
 // ===== KONFIGURACJA =====
 const CLIENT_ID = '678355265949-sgdj5qan88mm09sse4phmo80dn0a964n.apps.googleusercontent.com';
-const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
+const SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email';
 
 // ===== STAN APLIKACJI =====
 let state = {
