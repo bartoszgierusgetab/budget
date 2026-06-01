@@ -442,13 +442,6 @@
       <button class="filter-chip active" onclick="filterHistory('all')" id="filter-all">All</button>
       <button class="filter-chip" onclick="filterHistory('Bartosz')" id="filter-Bartosz">Bartosz</button>
       <button class="filter-chip" onclick="filterHistory('Selin')" id="filter-Selin">Selin</button>
-      <button class="filter-chip" onclick="filterHistory('Food')" id="filter-Food">🛒 Food</button>
-      <button class="filter-chip" onclick="filterHistory('Household')" id="filter-Household">🧴 Household</button>
-      <button class="filter-chip" onclick="filterHistory('Dining out')" id="filter-Dining out">🍽️ Dining</button>
-      <button class="filter-chip" onclick="filterHistory('Transport')" id="filter-Transport">🚗 Transport</button>
-      <button class="filter-chip" onclick="filterHistory('Home')" id="filter-Home">🏠 Home</button>
-      <button class="filter-chip" onclick="filterHistory('Health')" id="filter-Health">💊 Health</button>
-      <button class="filter-chip" onclick="filterHistory('Entertainment')" id="filter-Entertainment">🎉 Fun</button>
     </div>
     <div class="history-chart-wrap" id="historyChartWrap" style="display:none">
       <div class="card" style="margin:0 0 8px">
@@ -902,7 +895,8 @@ Categorize EACH item individually:
 - Other: anything else
 For discounts/coupons/rebates: put them in "discounts" array with positive amount (e.g. 60.00 not -60.00).
 Total should be the final amount paid after discounts.
-If amount unreadable use 0.`;
+If amount unreadable use 0.
+Keep product names SHORT — max 3 words, include quantity if shown (e.g. "3x Avocado", "Pepsi Zero 4x", "Toilet paper").`;
 
   try {
     // Build content array with all images
@@ -977,28 +971,38 @@ async function saveScanTransaction() {
     ? 'Discounts: ' + discounts.map(d => d.name + ' -' + d.amount.toFixed(2) + 'PLN').join(', ')
     : '';
 
-  // Build rows — one per product
-  const rows = [];
+  // Build ONE row for the whole order, products packed in description
   const baseId = Date.now();
+  const rows = [];
 
+  // Pack items into description: "store | name:cat:amount, name2:cat2:amount2"
+  let packedItems = '';
   if (state.scanPozycje && state.scanPozycje.length > 0) {
-    state.scanPozycje.forEach((item, i) => {
-      const name = item.name || item.nazwa || 'Item';
-      const amount = item.amount || item.kwota || 0;
+    const itemsSum = state.scanPozycje.reduce((s, item) => s + (item.amount || item.kwota || 0), 0);
+    const scale = itemsSum > 0 && state.scanTotal > 0 ? state.scanTotal / itemsSum : 1;
+    packedItems = state.scanPozycje
+      .filter(item => (item.amount || item.kwota || 0) > 0)
+      .map(item => {
+        const name = (item.name || item.nazwa || 'Item').substring(0, 30);
+        const scaledAmount = parseFloat(((item.amount || item.kwota || 0) * scale).toFixed(2));
+        const cat = CAT_MAP[item.category || item.kategoria] || item.category || item.kategoria || 'Other';
+        return name + ':' + cat + ':' + scaledAmount;
+      }).join('|');
+  }
+
+  // Dominant category = category with highest total value
+  const catTotals = {};
+  if (state.scanPozycje && state.scanPozycje.length > 0) {
+    state.scanPozycje.forEach(item => {
       const cat = CAT_MAP[item.category || item.kategoria] || item.category || item.kategoria || 'Other';
-      if (amount <= 0) return; // skip zero-amount items
-      // Add discount note only to first item
-      const note = i === 0 && discountNote ? discountNote : (i === 0 ? 'scanned' : '');
-      rows.push([(baseId + i).toString(), today, state.scanPerson, cat,
-        mainDesc + ' — ' + name, amount.toString(), 'expense', state.scanSplit, note]);
+      catTotals[cat] = (catTotals[cat] || 0) + (item.amount || item.kwota || 0);
     });
   }
+  const dominantCat = Object.entries(catTotals).sort((a,b) => b[1]-a[1])[0]?.[0] || 'Other';
+  const fullDesc = packedItems ? mainDesc + ' || ' + packedItems : mainDesc;
 
-  // If no items parsed, save as single transaction
-  if (rows.length === 0) {
-    rows.push([baseId.toString(), today, state.scanPerson, 'Other',
-      mainDesc, state.scanTotal.toString(), 'expense', state.scanSplit, discountNote || 'scanned']);
-  }
+  rows.push([baseId.toString(), today, state.scanPerson, dominantCat,
+    fullDesc, state.scanTotal.toString(), 'expense', state.scanSplit, discountNote || 'scanned']);
 
   document.getElementById('btnSaveScan').disabled = true;
   showLoading('Saving ' + rows.length + ' items...');
@@ -1059,8 +1063,26 @@ function updateDashboard() {
     document.getElementById('debtDesc').textContent = 'Bartosz owes Selin';
   }
 
+  // Build category sums from packed product data
   const catSums = {};
-  monthTrans.forEach(t => { catSums[t.kategoria] = (catSums[t.kategoria] || 0) + t.kwota; });
+  monthTrans.forEach(t => {
+    const opis = t.opis || '';
+    if (opis.includes(' || ')) {
+      // Unpack items: name:cat:amount|name2:cat2:amount2
+      const packed = opis.split(' || ')[1] || '';
+      packed.split('|').forEach(p => {
+        const parts = p.split(':');
+        if (parts.length >= 3) {
+          const cat = parts[1];
+          const amount = parseFloat(parts[2]) || 0;
+          if (cat && amount > 0) catSums[cat] = (catSums[cat] || 0) + amount;
+        }
+      });
+    } else {
+      // Regular transaction — use its category
+      catSums[t.kategoria] = (catSums[t.kategoria] || 0) + t.kwota;
+    }
+  });
   drawPieChart(Object.entries(catSums).sort((a,b) => b[1]-a[1]), totalSum);
 
   // Calculate savings from discount notes
@@ -1102,7 +1124,6 @@ function filterHistory(filter) {
 
   let filtered = [...state.transactions].sort((a,b) => b.id-a.id);
   if (filter === 'Bartosz' || filter === 'Selin') filtered = filtered.filter(t => t.osoba === filter);
-  else if (filter !== 'all') filtered = filtered.filter(t => t.kategoria === filter);
 
   renderTransactions(filtered, 'transList');
   drawWeeklyBars(filtered);
@@ -1149,7 +1170,7 @@ function renderTransactions(trans, targetId) {
     return `<div class="trans-item" id="row-${t.id}" ${clickHandler}>
       <div class="trans-icon" style="background:${CAT_COLORS[t.kategoria]||'#2e2e3e'}22">${CAT_ICONS[t.kategoria]||'📦'}</div>
       <div class="trans-info">
-        <div class="trans-name">${(t.opis||t.kategoria).split(' | ')[0]}</div>
+        <div class="trans-name">${(t.opis||t.kategoria).split(' || ')[0].split(' | ')[0]}</div>
         <div class="trans-meta">${t.data} · ${t.kategoria} · ${t.podzial}${hasItems?' · 👆 details':' · 👆 edit'}</div>
       </div>
       <div class="trans-right">
@@ -1271,12 +1292,10 @@ function drawPieChart(sortedCats, total) {
 }
 
 function goToCategory(cat) {
+  // Store category to highlight in modal context but show All transactions
+  state.highlightCat = cat;
   showPage('history');
-  filterHistory(cat);
-  // Activate correct chip
-  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-  const chip = document.getElementById('filter-' + cat);
-  if (chip) { chip.classList.add('active'); chip.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }); }
+  filterHistory('all');
 }
 
 // ===== TRANSACTION DETAIL MODAL =====
@@ -1289,9 +1308,42 @@ function showTransDetail(id) {
   document.getElementById('modalTitle').textContent = (t.opis||'').split(' | ')[0] || t.kategoria;
   document.getElementById('modalSub').textContent = t.data + ' · ' + t.osoba + ' · ' + t.podzial + ' · ' + t.kwota.toFixed(2) + ' PLN';
   const itemsEl = document.getElementById('modalItems');
-  const parts = (t.opis||'').split(' | ');
-  if (parts.length > 1) {
-    const items = parts[1].split(', ').map(p => {
+  const opis = t.opis || '';
+
+  if (opis.includes(' || ')) {
+    // New packed format: "store || name:cat:amount|name2:cat2:amount2"
+    const packedPart = opis.split(' || ')[1] || '';
+    const items = packedPart.split('|').map(p => {
+      const parts = p.split(':');
+      return parts.length >= 3
+        ? { name: parts[0], cat: parts[1], amount: parseFloat(parts[2]) || 0 }
+        : { name: p, cat: '', amount: 0 };
+    }).filter(i => i.amount > 0);
+
+    // Group by category for display
+    const bycat = {};
+    items.forEach(i => { if (!bycat[i.cat]) bycat[i.cat] = []; bycat[i.cat].push(i); });
+
+    let html = '';
+    Object.entries(bycat).forEach(([cat, catItems]) => {
+      const color = CAT_COLORS[cat] || '#7c6af7';
+      html += `<div style="font-size:11px;font-weight:700;color:${color};text-transform:uppercase;letter-spacing:0.05em;padding:8px 0 4px">${CAT_ICONS[cat]||'📦'} ${cat}</div>`;
+      catItems.forEach(item => {
+        html += `<div class="modal-item"><span class="modal-item-name">${item.name}</span><span class="modal-item-price">−${item.amount.toFixed(2)} PLN</span></div>`;
+      });
+    });
+
+    // Show discount if in note
+    if (t.notatka && t.notatka.includes('Discounts:')) {
+      const discountText = t.notatka.replace('Discounts:', '').trim();
+      html += `<div style="padding:10px 0 0;font-size:13px;color:var(--green)">🏷️ ${discountText}</div>`;
+    }
+
+    itemsEl.innerHTML = html + `<div class="modal-total"><span>Total paid</span><span>−${t.kwota.toFixed(2)} PLN</span></div>`;
+
+  } else if (opis.includes(' | ')) {
+    // Old format fallback
+    const items = opis.split(' | ')[1].split(', ').map(p => {
       const m = p.match(/^(.+?)\s+([\d.]+)PLN$/);
       return m ? { name: m[1], amount: parseFloat(m[2]) } : { name: p, amount: 0 };
     });
