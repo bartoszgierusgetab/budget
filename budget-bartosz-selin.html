@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
@@ -7,378 +7,57 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Budget B&S">
 <title>Budget Bartosz & Selin</title>
-
 <style>
-  /* ===== ZMIENNE I RESET ===== */
   :root {
-    --bg: #0f0f13;
-    --bg2: #1a1a22;
-    --bg3: #222230;
-    --border: #2e2e3e;
-    --accent: #7c6af7;
-    --accent2: #a78bfa;
-    --green: #34d399;
-    --red: #f87171;
-    --yellow: #fbbf24;
-    --text: #f0f0f5;
-    --text2: #9090a8;
-    --text3: #5a5a72;
-    --bartosz: #7c6af7;
-    --selin: #f472b6;
-    --radius: 14px;
-    --radius-sm: 8px;
+    --bg: #0f0f13; --bg2: #1a1a22; --bg3: #222230; --border: #2e2e3e;
+    --accent: #7c6af7; --accent2: #a78bfa; --green: #34d399; --red: #f87171;
+    --yellow: #fbbf24; --text: #f0f0f5; --text2: #9090a8; --text3: #5a5a72;
+    --bartosz: #7c6af7; --selin: #f472b6; --radius: 14px;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; max-width: 480px; margin: 0 auto; padding-bottom: 90px; }
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    max-width: 480px;
-    margin: 0 auto;
-    padding-bottom: 90px;
-  }
-
-  /* ===== EKRAN LOGOWANIA ===== */
-  #loginScreen {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 2rem;
-    text-align: center;
-  }
-
-  .login-logo {
-    width: 72px; height: 72px;
-    background: linear-gradient(135deg, var(--accent), var(--selin));
-    border-radius: 20px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 32px; margin-bottom: 1.5rem;
-  }
-
+  /* LOGIN */
+  #loginScreen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; text-align: center; }
+  .login-logo { width: 72px; height: 72px; background: linear-gradient(135deg, var(--accent), var(--selin)); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 32px; margin-bottom: 1.5rem; }
   .login-title { font-size: 26px; font-weight: 700; margin-bottom: 0.5rem; }
   .login-sub { color: var(--text2); font-size: 15px; margin-bottom: 2.5rem; }
-
-  .btn-google {
-    display: flex; align-items: center; gap: 12px;
-    background: white; color: #1a1a1a;
-    border: none; border-radius: 12px;
-    padding: 14px 24px; font-size: 16px; font-weight: 600;
-    cursor: pointer; width: 100%; justify-content: center;
-    transition: opacity 0.2s;
-  }
+  .btn-google { display: flex; align-items: center; gap: 12px; background: white; color: #1a1a1a; border: none; border-radius: 12px; padding: 14px 24px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; justify-content: center; transition: opacity 0.2s; }
   .btn-google:active { opacity: 0.8; }
-  .btn-google img { width: 20px; height: 20px; }
 
-  /* ===== NAWIGACJA DOLNA ===== */
-  #nav {
-    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 100%; max-width: 480px;
-    background: var(--bg2);
-    border-top: 1px solid var(--border);
-    display: flex; padding: 8px 0 20px;
-    z-index: 100;
-  }
-
-  .nav-btn {
-    flex: 1; display: flex; flex-direction: column;
-    align-items: center; gap: 4px;
-    background: none; border: none; color: var(--text3);
-    font-size: 10px; cursor: pointer; padding: 6px 0;
-    transition: color 0.2s;
-  }
+  /* NAV */
+  #nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: var(--bg2); border-top: 1px solid var(--border); display: flex; padding: 8px 0 20px; z-index: 100; }
+  .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none; color: var(--text3); font-size: 10px; cursor: pointer; padding: 6px 0; transition: color 0.2s; }
   .nav-btn.active { color: var(--accent2); }
   .nav-btn svg { width: 22px; height: 22px; }
 
-  /* ===== NAGŁÓWEK ===== */
-  .page-header {
-    padding: 56px 20px 16px;
-    background: var(--bg);
-    position: sticky; top: 0; z-index: 50;
-    border-bottom: 1px solid var(--border);
-  }
+  /* HEADER */
+  .page-header { padding: 56px 20px 16px; background: var(--bg); position: sticky; top: 0; z-index: 50; border-bottom: 1px solid var(--border); }
   .page-header h1 { font-size: 22px; font-weight: 700; }
   .page-header .sub { color: var(--text2); font-size: 13px; margin-top: 2px; }
 
-  /* ===== KARTY ===== */
-  .card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px;
-    margin: 0 16px 12px;
-  }
+  /* CARDS */
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin: 0 16px 12px; }
+  .card-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text2); margin-bottom: 10px; }
 
-  .card-title {
-    font-size: 12px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.06em;
-    color: var(--text2); margin-bottom: 10px;
-  }
-
-  /* ===== DASHBOARD ===== */
+  /* DASHBOARD */
   #pageDashboard { display: none; }
-
-  .month-selector {
-    display: flex; align-items: center; justify-content: space-between;
-    margin: 16px 16px 8px;
-  }
+  .month-selector { display: flex; align-items: center; justify-content: space-between; margin: 16px 16px 8px; }
   .month-label { font-size: 18px; font-weight: 700; }
-  .month-nav {
-    background: var(--bg3); border: 1px solid var(--border);
-    color: var(--text); border-radius: 8px;
-    width: 32px; height: 32px; display: flex;
-    align-items: center; justify-content: center;
-    cursor: pointer; font-size: 16px;
-  }
-
-  .stats-grid {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 10px; margin: 0 16px 12px;
-  }
-
-  .stat-card {
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 14px;
-  }
+  .month-nav { background: var(--bg3); border: 1px solid var(--border); color: var(--text); border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; }
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 16px 12px; }
+  .stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
   .stat-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; }
   .stat-value { font-size: 22px; font-weight: 700; }
   .stat-value.bartosz { color: var(--bartosz); }
   .stat-value.selin { color: var(--selin); }
   .stat-value.total { color: var(--text); }
-  .stat-value.debt { color: var(--yellow); }
-
-  .debt-card {
-    background: linear-gradient(135deg, #1e1a3a, #1a2232);
-    border: 1px solid #3a2e6e;
-    border-radius: var(--radius); padding: 16px;
-    margin: 0 16px 12px; text-align: center;
-  }
+  .debt-card { background: linear-gradient(135deg, #1e1a3a, #1a2232); border: 1px solid #3a2e6e; border-radius: var(--radius); padding: 16px; margin: 0 16px 12px; text-align: center; }
   .debt-label { font-size: 13px; color: var(--text2); margin-bottom: 6px; }
   .debt-amount { font-size: 28px; font-weight: 800; color: var(--yellow); }
   .debt-desc { font-size: 13px; color: var(--text2); margin-top: 4px; }
 
-  /* Wykres kategorii */
-  .cat-bar-row {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 10px;
-  }
-  .cat-bar-label { font-size: 13px; min-width: 80px; }
-  .cat-bar-track {
-    flex: 1; height: 8px; background: var(--bg3);
-    border-radius: 4px; overflow: hidden;
-  }
-  .cat-bar-fill { height: 100%; border-radius: 4px; background: var(--accent); transition: width 0.4s; }
-  .cat-bar-val { font-size: 12px; color: var(--text2); min-width: 56px; text-align: right; }
-
-  /* ===== FORMULARZ DODAWANIA ===== */
-  #pageAdd { display: none; }
-
-  .form-group { margin: 0 16px 12px; }
-  .form-label { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; display: block; }
-
-  .form-input, .form-select, .form-textarea {
-    width: 100%; background: var(--bg2);
-    border: 1px solid var(--border); border-radius: 10px;
-    color: var(--text); font-size: 16px;
-    padding: 12px 14px; outline: none;
-    transition: border-color 0.2s;
-    -webkit-appearance: none;
-  }
-  .form-input:focus, .form-select:focus { border-color: var(--accent); }
-  .form-select { cursor: pointer; }
-
-  .person-toggle {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 8px; margin: 0 16px 12px;
-  }
-  .person-btn {
-    padding: 12px; border-radius: 10px;
-    border: 2px solid var(--border);
-    background: var(--bg2); color: var(--text2);
-    font-size: 15px; font-weight: 600; cursor: pointer;
-    transition: all 0.2s; text-align: center;
-  }
-  .person-btn.active-bartosz {
-    border-color: var(--bartosz); color: var(--bartosz);
-    background: #1e1a3a;
-  }
-  .person-btn.active-selin {
-    border-color: var(--selin); color: var(--selin);
-    background: #2a1a2e;
-  }
-
-  .type-toggle {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 8px; margin: 0 16px 12px;
-  }
-  .type-btn {
-    padding: 10px; border-radius: 10px;
-    border: 2px solid var(--border);
-    background: var(--bg2); color: var(--text2);
-    font-size: 14px; font-weight: 600; cursor: pointer;
-    transition: all 0.2s;
-  }
-  .type-btn.active-wydatek { border-color: var(--red); color: var(--red); background: #2a1a1a; }
-  .type-btn.active-przychod { border-color: var(--green); color: var(--green); background: #1a2a22; }
-
-  .split-toggle {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 8px; margin: 0 16px 12px;
-  }
-  .split-btn {
-    padding: 10px; border-radius: 10px;
-    border: 2px solid var(--border);
-    background: var(--bg2); color: var(--text2);
-    font-size: 13px; font-weight: 600; cursor: pointer;
-    transition: all 0.2s; text-align: center;
-  }
-  .split-btn.active { border-color: var(--accent); color: var(--accent2); background: #1e1a3a; }
-
-  .btn-primary {
-    width: calc(100% - 32px); margin: 8px 16px 16px;
-    background: var(--accent); color: white;
-    border: none; border-radius: 12px;
-    padding: 16px; font-size: 16px; font-weight: 700;
-    cursor: pointer; transition: opacity 0.2s;
-  }
-  .btn-primary:active { opacity: 0.85; }
-  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  /* ===== SKANER PARAGONÓW ===== */
-  #pageScan { display: none; }
-
-  .scan-zone {
-    margin: 16px;
-    border: 2px dashed var(--border);
-    border-radius: var(--radius);
-    padding: 32px 16px;
-    text-align: center;
-    cursor: pointer;
-    transition: border-color 0.2s;
-  }
-  .scan-zone:active { border-color: var(--accent); }
-  .scan-icon { font-size: 48px; margin-bottom: 12px; }
-  .scan-text { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
-  .scan-sub { font-size: 13px; color: var(--text2); }
-
-  #scanPreview {
-    margin: 0 16px 12px;
-    border-radius: var(--radius);
-    overflow: hidden; display: none;
-  }
-  #scanPreview img { width: 100%; border-radius: var(--radius); }
-
-  .scan-result {
-    margin: 0 16px 12px;
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 16px;
-    display: none;
-  }
-  .scan-result-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
-
-  .scan-item {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 8px 0; border-bottom: 1px solid var(--border);
-  }
-  .scan-item:last-child { border-bottom: none; }
-  .scan-item-name { font-size: 14px; flex: 1; }
-  .scan-item-cat {
-    font-size: 11px; background: var(--bg3);
-    border-radius: 6px; padding: 3px 8px; margin: 0 8px;
-    color: var(--text2);
-  }
-  .scan-item-price { font-size: 14px; font-weight: 600; min-width: 60px; text-align: right; }
-
-  .scan-total {
-    display: flex; justify-content: space-between;
-    padding: 12px 0 0; font-weight: 700; font-size: 16px;
-    border-top: 1px solid var(--border); margin-top: 4px;
-  }
-
-  .btn-scan {
-    width: calc(100% - 32px); margin: 0 16px 12px;
-    background: var(--bg2); color: var(--text);
-    border: 1px solid var(--border); border-radius: 12px;
-    padding: 14px; font-size: 15px; font-weight: 600;
-    cursor: pointer; transition: all 0.2s;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-  }
-  .btn-scan:active { background: var(--bg3); }
-
-  .loader {
-    display: none; text-align: center;
-    padding: 24px; color: var(--text2);
-  }
-  .loader-spinner {
-    width: 32px; height: 32px; margin: 0 auto 12px;
-    border: 3px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* ===== HISTORIA ===== */
-  #pageHistory { display: none; }
-
-  .filter-row {
-    display: flex; gap: 8px; padding: 12px 16px;
-    overflow-x: auto; scrollbar-width: none;
-  }
-  .filter-row::-webkit-scrollbar { display: none; }
-
-  .filter-chip {
-    flex-shrink: 0; background: var(--bg2);
-    border: 1px solid var(--border); border-radius: 20px;
-    padding: 6px 14px; font-size: 13px; color: var(--text2);
-    cursor: pointer; transition: all 0.2s; white-space: nowrap;
-  }
-  .filter-chip.active { background: var(--accent); border-color: var(--accent); color: white; }
-
-  .trans-list { padding: 0 16px; }
-
-  .trans-item {
-    display: flex; align-items: center;
-    padding: 12px 0; border-bottom: 1px solid var(--border);
-    gap: 12px;
-  }
-  .trans-item:last-child { border-bottom: none; }
-
-  .trans-icon {
-    width: 40px; height: 40px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; flex-shrink: 0;
-  }
-
-  .trans-info { flex: 1; min-width: 0; }
-  .trans-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .trans-meta { font-size: 12px; color: var(--text2); margin-top: 2px; }
-
-  .trans-right { text-align: right; flex-shrink: 0; }
-  .trans-amount { font-size: 15px; font-weight: 700; }
-  .trans-amount.wydatek { color: var(--red); }
-  .trans-amount.przychod { color: var(--green); }
-  .trans-person { font-size: 11px; margin-top: 2px; }
-  .trans-person.bartosz { color: var(--bartosz); }
-  .trans-person.selin { color: var(--selin); }
-
-  .empty-state {
-    text-align: center; padding: 48px 24px;
-    color: var(--text3); font-size: 14px;
-  }
-  .empty-icon { font-size: 40px; margin-bottom: 12px; }
-
-  .btn-delete {
-    background: none; border: none; color: var(--text3);
-    font-size: 18px; cursor: pointer; padding: 6px; flex-shrink: 0;
-    border-radius: 6px; transition: color 0.2s;
-  }
-  .btn-delete:active { color: var(--red); }
-
+  /* PIE CHART */
   .pie-wrap { display: flex; align-items: center; gap: 16px; padding: 4px 0; }
   .pie-legend { flex: 1; }
   .pie-legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; font-size: 12px; }
@@ -386,6 +65,90 @@
   .pie-legend-name { flex: 1; color: var(--text2); }
   .pie-legend-val { font-weight: 600; font-size: 12px; }
 
+  /* FORM */
+  #pageAdd { display: none; }
+  .form-group { margin: 0 16px 12px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; display: block; }
+  .form-input, .form-select { width: 100%; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 16px; padding: 12px 14px; outline: none; transition: border-color 0.2s; -webkit-appearance: none; }
+  .form-input:focus, .form-select:focus { border-color: var(--accent); }
+  .form-select { cursor: pointer; }
+
+  /* Voice note button */
+  .input-with-mic { position: relative; }
+  .input-with-mic .form-input { padding-right: 48px; }
+  .btn-mic { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 20px; cursor: pointer; padding: 4px; color: var(--text3); transition: color 0.2s; }
+  .btn-mic.recording { color: var(--red); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .person-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 16px 12px; }
+  .person-btn { padding: 12px; border-radius: 10px; border: 2px solid var(--border); background: var(--bg2); color: var(--text2); font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: center; }
+  .person-btn.active-bartosz { border-color: var(--bartosz); color: var(--bartosz); background: #1e1a3a; }
+  .person-btn.active-selin { border-color: var(--selin); color: var(--selin); background: #2a1a2e; }
+  .type-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 16px 12px; }
+  .type-btn { padding: 10px; border-radius: 10px; border: 2px solid var(--border); background: var(--bg2); color: var(--text2); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .type-btn.active-expense { border-color: var(--red); color: var(--red); background: #2a1a1a; }
+  .type-btn.active-income { border-color: var(--green); color: var(--green); background: #1a2a22; }
+  .split-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 16px 12px; }
+  .split-btn { padding: 10px; border-radius: 10px; border: 2px solid var(--border); background: var(--bg2); color: var(--text2); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: center; }
+  .split-btn.active { border-color: var(--accent); color: var(--accent2); background: #1e1a3a; }
+  .btn-primary { width: calc(100% - 32px); margin: 8px 16px 16px; background: var(--accent); color: white; border: none; border-radius: 12px; padding: 16px; font-size: 16px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+  .btn-primary:active { opacity: 0.85; }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* SCAN */
+  #pageScan { display: none; }
+  .scan-zone { margin: 16px; border: 2px dashed var(--border); border-radius: var(--radius); padding: 24px 16px; text-align: center; cursor: pointer; transition: border-color 0.2s; }
+  .scan-zone:active { border-color: var(--accent); }
+  .scan-icon { font-size: 40px; margin-bottom: 8px; }
+  .scan-text { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .scan-sub { font-size: 13px; color: var(--text2); }
+
+  /* Multi-image previews */
+  .scan-previews { display: flex; gap: 8px; overflow-x: auto; padding: 0 16px 8px; scrollbar-width: none; }
+  .scan-previews::-webkit-scrollbar { display: none; }
+  .scan-preview-thumb { flex-shrink: 0; width: 80px; height: 80px; border-radius: 10px; object-fit: cover; border: 2px solid var(--border); }
+  .scan-preview-thumb.active { border-color: var(--accent); }
+  .scan-add-more { flex-shrink: 0; width: 80px; height: 80px; border-radius: 10px; border: 2px dashed var(--border); display: flex; align-items: center; justify-content: center; font-size: 28px; color: var(--text3); cursor: pointer; }
+
+  .scan-result { margin: 0 16px 12px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: none; }
+  .scan-result-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+  .scan-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .scan-item:last-child { border-bottom: none; }
+  .scan-item-name { font-size: 14px; flex: 1; }
+  .scan-item-cat { font-size: 11px; background: var(--bg3); border-radius: 6px; padding: 3px 8px; margin: 0 8px; color: var(--text2); }
+  .scan-item-price { font-size: 14px; font-weight: 600; min-width: 60px; text-align: right; }
+  .scan-total { display: flex; justify-content: space-between; padding: 12px 0 0; font-weight: 700; font-size: 16px; border-top: 1px solid var(--border); margin-top: 4px; }
+
+  .loader { display: none; text-align: center; padding: 24px; color: var(--text2); }
+  .loader-spinner { width: 32px; height: 32px; margin: 0 auto 12px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* HISTORY */
+  #pageHistory { display: none; }
+  .filter-row { display: flex; gap: 8px; padding: 12px 16px; overflow-x: auto; scrollbar-width: none; }
+  .filter-row::-webkit-scrollbar { display: none; }
+  .filter-chip { flex-shrink: 0; background: var(--bg2); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; color: var(--text2); cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+  .filter-chip.active { background: var(--accent); border-color: var(--accent); color: white; }
+  .trans-list { padding: 0 16px; }
+  .trans-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); gap: 12px; }
+  .trans-item:last-child { border-bottom: none; }
+  .trans-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .trans-info { flex: 1; min-width: 0; }
+  .trans-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .trans-meta { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .trans-right { text-align: right; flex-shrink: 0; }
+  .trans-amount { font-size: 15px; font-weight: 700; }
+  .trans-amount.expense { color: var(--red); }
+  .trans-amount.income { color: var(--green); }
+  .trans-person { font-size: 11px; margin-top: 2px; }
+  .trans-person.bartosz { color: var(--bartosz); }
+  .trans-person.selin { color: var(--selin); }
+  .empty-state { text-align: center; padding: 48px 24px; color: var(--text3); font-size: 14px; }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .btn-delete { background: none; border: none; color: var(--text3); font-size: 18px; cursor: pointer; padding: 6px; flex-shrink: 0; border-radius: 6px; }
+  .btn-delete:active { color: var(--red); }
+
+  /* HISTORY BARS */
   .history-chart-wrap { padding: 0 16px 4px; }
   .hist-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
   .hist-bar-label { font-size: 12px; min-width: 72px; color: var(--text2); }
@@ -394,131 +157,89 @@
   .hist-bar-fill span { font-size: 10px; font-weight: 600; color: white; white-space: nowrap; }
   .hist-bar-total { font-size: 11px; color: var(--text2); min-width: 52px; text-align: right; }
 
-  /* Modal szczegółów transakcji */
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-    z-index: 400; display: flex; align-items: flex-end;
-    padding: 0;
-  }
-  .modal-box {
-    background: var(--bg2); border-radius: 20px 20px 0 0;
-    width: 100%; max-width: 480px; margin: 0 auto;
-    padding: 20px 20px 40px;
-    max-height: 80vh; overflow-y: auto;
-  }
-  .modal-handle {
-    width: 40px; height: 4px; background: var(--border);
-    border-radius: 2px; margin: 0 auto 16px;
-  }
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 400; display: flex; align-items: flex-end; }
+  .modal-box { background: var(--bg2); border-radius: 20px 20px 0 0; width: 100%; max-width: 480px; margin: 0 auto; padding: 20px 20px 40px; max-height: 80vh; overflow-y: auto; }
+  .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 16px; }
   .modal-title { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
   .modal-sub { font-size: 13px; color: var(--text2); margin-bottom: 16px; }
-  .modal-item {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 10px 0; border-bottom: 1px solid var(--border);
-    font-size: 14px;
-  }
+  .modal-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
   .modal-item:last-child { border-bottom: none; }
   .modal-item-name { flex: 1; color: var(--text); }
-  .modal-item-cat { font-size: 11px; background: var(--bg3); border-radius: 6px; padding: 3px 8px; margin: 0 8px; color: var(--text2); }
   .modal-item-price { font-weight: 600; color: var(--red); }
   .modal-total { display: flex; justify-content: space-between; padding: 14px 0 0; font-weight: 700; font-size: 16px; border-top: 1px solid var(--border); margin-top: 4px; }
   .modal-close { width: 100%; background: var(--bg3); border: 1px solid var(--border); color: var(--text); border-radius: 10px; padding: 12px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 16px; }
+  .modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .btn-edit-action { padding: 12px; border-radius: 10px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .btn-edit-action.edit { background: var(--accent); color: white; }
+  .btn-edit-action.delete { background: var(--bg3); color: var(--red); border: 1px solid var(--border); }
 
-  /* ===== USTAWIENIA ===== */
+  /* Edit modal */
+  #editModal .modal-box { padding-bottom: 20px; }
+  .edit-field { margin-bottom: 12px; }
+  .edit-field label { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 5px; }
+  .edit-field input, .edit-field select { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 15px; padding: 10px 12px; outline: none; -webkit-appearance: none; }
+  .edit-field input:focus, .edit-field select:focus { border-color: var(--accent); }
+  .edit-person-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .edit-split-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .edit-toggle-btn { padding: 10px; border-radius: 8px; border: 2px solid var(--border); background: var(--bg3); color: var(--text2); font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; }
+  .edit-toggle-btn.active-bartosz { border-color: var(--bartosz); color: var(--bartosz); background: #1e1a3a; }
+  .edit-toggle-btn.active-selin { border-color: var(--selin); color: var(--selin); background: #2a1a2e; }
+  .edit-toggle-btn.active-shared { border-color: var(--accent); color: var(--accent2); background: #1e1a3a; }
+  .edit-toggle-btn.active-personal { border-color: var(--accent); color: var(--accent2); background: #1e1a3a; }
+  .btn-save-edit { width: 100%; background: var(--accent); color: white; border: none; border-radius: 10px; padding: 14px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 4px; }
+  .btn-save-edit:disabled { opacity: 0.5; }
+
+  /* SETTINGS */
   #pageSettings { display: none; }
-
   .settings-section { margin: 0 16px 20px; }
   .settings-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text2); margin-bottom: 10px; }
-
-  .settings-row {
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: 10px; padding: 14px;
-    margin-bottom: 8px;
-  }
+  .settings-row { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 8px; }
   .settings-label { font-size: 13px; color: var(--text2); margin-bottom: 6px; }
-  .settings-input {
-    width: 100%; background: var(--bg3);
-    border: 1px solid var(--border); border-radius: 8px;
-    color: var(--text); font-size: 14px; padding: 10px 12px;
-    outline: none; font-family: monospace;
-  }
+  .settings-input { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; padding: 10px 12px; outline: none; font-family: monospace; }
   .settings-input:focus { border-color: var(--accent); }
-
-  .btn-save {
-    width: 100%; background: var(--accent); color: white;
-    border: none; border-radius: 10px;
-    padding: 14px; font-size: 15px; font-weight: 700;
-    cursor: pointer; margin-top: 6px;
-  }
-
-  .user-card {
-    display: flex; align-items: center; gap: 12px;
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: 12px; padding: 14px; margin-bottom: 12px;
-  }
-  .user-avatar {
-    width: 44px; height: 44px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 18px; flex-shrink: 0;
-  }
+  .btn-save { width: 100%; background: var(--accent); color: white; border: none; border-radius: 10px; padding: 14px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 6px; }
+  .user-card { display: flex; align-items: center; gap: 12px; background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+  .user-avatar { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; flex-shrink: 0; }
   .user-avatar.bartosz { background: #1e1a3a; color: var(--bartosz); }
   .user-avatar.selin { background: #2a1a2e; color: var(--selin); }
   .user-name { font-size: 16px; font-weight: 600; }
   .user-email { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .btn-logout { width: 100%; background: var(--bg2); border: 1px solid var(--border); color: var(--red); border-radius: 10px; padding: 14px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 8px; }
 
-  .btn-logout {
-    width: 100%; background: var(--bg2);
-    border: 1px solid var(--border); color: var(--red);
-    border-radius: 10px; padding: 14px;
-    font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 8px;
-  }
+  /* AUTO-REFRESH indicator */
+  .refresh-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); display: inline-block; margin-left: 6px; animation: blink 2s infinite; vertical-align: middle; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
 
-  /* ===== TOAST ===== */
-  #toast {
-    position: fixed; bottom: 100px; left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--bg3); border: 1px solid var(--border);
-    color: var(--text); padding: 12px 20px;
-    border-radius: 10px; font-size: 14px; font-weight: 500;
-    opacity: 0; transition: all 0.3s; z-index: 200;
-    white-space: nowrap; pointer-events: none;
-  }
+  /* TOAST */
+  #toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--bg3); border: 1px solid var(--border); color: var(--text); padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 500; opacity: 0; transition: all 0.3s; z-index: 200; white-space: nowrap; pointer-events: none; }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   #toast.success { border-color: var(--green); color: var(--green); }
   #toast.error { border-color: var(--red); color: var(--red); }
 
-  /* ===== LOADING OVERLAY ===== */
-  #loadingOverlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.7);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 300; display: none;
-  }
-  .loading-box {
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: 16px; padding: 28px 36px; text-align: center;
-  }
+  /* LOADING */
+  #loadingOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 300; display: none; }
+  .loading-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 28px 36px; text-align: center; }
   .loading-box .loader-spinner { display: block; }
   .loading-text { color: var(--text2); font-size: 14px; margin-top: 12px; }
 </style>
 </head>
 <body>
 
-<!-- ===== EKRAN LOGOWANIA ===== -->
+<!-- LOGIN -->
 <div id="loginScreen">
   <div class="login-logo">💰</div>
   <div class="login-title">Budget B&S</div>
-  <div class="login-sub">Wspólne finanse Bartosz & Selin</div>
+  <div class="login-sub">Shared finances — Bartosz & Selin</div>
   <button class="btn-google" onclick="signIn()">
     <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-    Zaloguj się przez Google
+    Sign in with Google
   </button>
 </div>
 
-<!-- ===== APLIKACJA GŁÓWNA ===== -->
+<!-- APP -->
 <div id="app" style="display:none;">
 
-  <!-- NAWIGACJA -->
   <nav id="nav">
     <button class="nav-btn active" onclick="showPage('dashboard')" id="nav-dashboard">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
@@ -526,277 +247,219 @@
     </button>
     <button class="nav-btn" onclick="showPage('add')" id="nav-add">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-      Dodaj
+      Add
     </button>
     <button class="nav-btn" onclick="showPage('scan')" id="nav-scan">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V5a1 1 0 011-1h2M4 17v2a1 1 0 001 1h2M17 4h2a1 1 0 011 1v2M17 20h2a1 1 0 001-1v-2"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg>
-      Skan
+      Scan
     </button>
     <button class="nav-btn" onclick="showPage('history')" id="nav-history">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
-      Historia
+      History
     </button>
     <button class="nav-btn" onclick="showPage('settings')" id="nav-settings">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-      Ustawienia
+      Settings
     </button>
   </nav>
 
-  <!-- ===== DASHBOARD ===== -->
+  <!-- DASHBOARD -->
   <div id="pageDashboard">
     <div class="page-header">
-      <h1>Podsumowanie</h1>
-      <div class="sub" id="dashboardUser">Ładowanie...</div>
+      <h1>Overview <span class="refresh-dot" id="refreshDot" style="display:none"></span></h1>
+      <div class="sub" id="dashboardUser">Loading...</div>
     </div>
-
     <div class="month-selector">
       <button class="month-nav" onclick="changeMonth(-1)">‹</button>
-      <div class="month-label" id="monthLabel">Czerwiec 2026</div>
+      <div class="month-label" id="monthLabel">June 2026</div>
       <button class="month-nav" onclick="changeMonth(1)">›</button>
     </div>
-
     <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-label">Bartosz wydał</div>
-        <div class="stat-value bartosz" id="statBartosz">0 zł</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Selin wydała</div>
-        <div class="stat-value selin" id="statSelin">0 zł</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Razem wydano</div>
-        <div class="stat-value total" id="statTotal">0 zł</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Wspólne wydatki</div>
-        <div class="stat-value" id="statCommon">0 zł</div>
-      </div>
+      <div class="stat-card"><div class="stat-label">Bartosz spent</div><div class="stat-value bartosz" id="statBartosz">0 PLN</div></div>
+      <div class="stat-card"><div class="stat-label">Selin spent</div><div class="stat-value selin" id="statSelin">0 PLN</div></div>
+      <div class="stat-card"><div class="stat-label">Total spent</div><div class="stat-value total" id="statTotal">0 PLN</div></div>
+      <div class="stat-card"><div class="stat-label">Shared expenses</div><div class="stat-value" id="statCommon">0 PLN</div></div>
     </div>
-
-    <div class="debt-card" id="debtCard">
-      <div class="debt-label" id="debtLabel">Rozliczenie</div>
-      <div class="debt-amount" id="debtAmount">0 zł</div>
-      <div class="debt-desc" id="debtDesc">Jesteście kwita 🎉</div>
+    <div class="debt-card">
+      <div class="debt-label">Settlement</div>
+      <div class="debt-amount" id="debtAmount">0 PLN</div>
+      <div class="debt-desc" id="debtDesc">You're even 🎉</div>
     </div>
-
     <div class="card">
-      <div class="card-title">Wydatki per kategoria</div>
+      <div class="card-title">Spending by category</div>
       <div class="pie-wrap">
-        <div class="pie-canvas-wrap">
-          <canvas id="pieChart" width="120" height="120"></canvas>
-        </div>
+        <div><canvas id="pieChart" width="120" height="120"></canvas></div>
         <div class="pie-legend" id="pieLegend"></div>
       </div>
     </div>
-
     <div class="card">
-      <div class="card-title">Ostatnie transakcje</div>
+      <div class="card-title">Recent transactions</div>
       <div id="recentTrans"></div>
     </div>
   </div>
 
-  <!-- ===== DODAJ TRANSAKCJĘ ===== -->
+  <!-- ADD -->
   <div id="pageAdd">
-    <div class="page-header">
-      <h1>Nowa transakcja</h1>
-    </div>
+    <div class="page-header"><h1>New transaction</h1></div>
+    <div style="height:12px"></div>
 
-    <div style="height: 12px;"></div>
-
-    <!-- Osoba -->
-    <label class="form-label" style="margin: 0 16px 6px; display: block;">Kto płaci?</label>
+    <label class="form-label" style="margin:0 16px 6px;display:block">Who's paying?</label>
     <div class="person-toggle">
       <button class="person-btn active-bartosz" id="btnBartosz" onclick="selectPerson('Bartosz')">Bartosz</button>
       <button class="person-btn" id="btnSelin" onclick="selectPerson('Selin')">Selin</button>
     </div>
 
-    <!-- Typ -->
-    <label class="form-label" style="margin: 0 16px 6px; display: block;">Typ</label>
+    <label class="form-label" style="margin:0 16px 6px;display:block">Type</label>
     <div class="type-toggle">
-      <button class="type-btn active-wydatek" id="btnWydatek" onclick="selectType('wydatek')">− Wydatek</button>
-      <button class="type-btn" id="btnPrzychod" onclick="selectType('przychod')">+ Przychód</button>
+      <button class="type-btn active-expense" id="btnExpense" onclick="selectType('expense')">− Expense</button>
+      <button class="type-btn" id="btnIncome" onclick="selectType('income')">+ Income</button>
     </div>
 
-    <!-- Podział -->
-    <label class="form-label" style="margin: 0 16px 6px; display: block;">Podział</label>
+    <label class="form-label" style="margin:0 16px 6px;display:block">Split</label>
     <div class="split-toggle">
-      <button class="split-btn active" id="btnWspolne" onclick="selectSplit('wspólne')">🤝 Wspólne</button>
-      <button class="split-btn" id="btnOsobiste" onclick="selectSplit('osobiste')">👤 Osobiste</button>
+      <button class="split-btn active" id="btnShared" onclick="selectSplit('shared')">🤝 Shared</button>
+      <button class="split-btn" id="btnPersonal" onclick="selectSplit('personal')">👤 Personal</button>
     </div>
 
-    <!-- Kwota -->
     <div class="form-group">
-      <label class="form-label">Kwota (PLN)</label>
-      <input type="number" class="form-input" id="inputKwota" placeholder="0.00" step="0.01" min="0" inputmode="decimal">
+      <label class="form-label">Amount (PLN)</label>
+      <input type="number" class="form-input" id="inputAmount" placeholder="0.00" step="0.01" min="0" inputmode="decimal">
     </div>
 
-    <!-- Kategoria -->
     <div class="form-group">
-      <label class="form-label">Kategoria</label>
-      <select class="form-select" id="inputKategoria">
-        <option value="Jedzenie">🛒 Jedzenie</option>
-        <option value="Chemia">🧴 Chemia / Drogeria</option>
-        <option value="Wyjście">🍽️ Wyjście / Restauracje</option>
+      <label class="form-label">Category</label>
+      <select class="form-select" id="inputCategory">
+        <option value="Food">🛒 Food</option>
+        <option value="Household">🧴 Household / Drugstore</option>
+        <option value="Dining out">🍽️ Dining out / Restaurants</option>
         <option value="Transport">🚗 Transport</option>
-        <option value="Dom">🏠 Dom / Rachunki</option>
-        <option value="Zdrowie">💊 Zdrowie</option>
-        <option value="Rozrywka">🎉 Rozrywka</option>
-        <option value="Ubrania">👗 Ubrania</option>
-        <option value="Podróże">✈️ Podróże</option>
-        <option value="Inne">📦 Inne</option>
+        <option value="Home">🏠 Home / Bills</option>
+        <option value="Health">💊 Health</option>
+        <option value="Entertainment">🎉 Entertainment</option>
+        <option value="Clothing">👗 Clothing</option>
+        <option value="Travel">✈️ Travel</option>
+        <option value="Other">📦 Other</option>
       </select>
     </div>
 
-    <!-- Opis -->
     <div class="form-group">
-      <label class="form-label">Opis</label>
-      <input type="text" class="form-input" id="inputOpis" placeholder="np. Frisco — zakupy tygodniowe">
-    </div>
-
-    <!-- Data -->
-    <div class="form-group">
-      <label class="form-label">Data</label>
-      <input type="date" class="form-input" id="inputData">
-    </div>
-
-    <!-- Notatka -->
-    <div class="form-group">
-      <label class="form-label">Notatka (opcjonalna)</label>
-      <input type="text" class="form-input" id="inputNotatka" placeholder="Dodatkowe info...">
-    </div>
-
-    <button class="btn-primary" onclick="addTransaction()" id="btnAdd">
-      Zapisz transakcję
-    </button>
-  </div>
-
-  <!-- ===== SKANER PARAGONÓW ===== -->
-  <div id="pageScan">
-    <div class="page-header">
-      <h1>Skan paragonu</h1>
-      <div class="sub">Zrób zdjęcie lub wgraj screenshot</div>
-    </div>
-
-    <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
-
-    <div class="scan-zone" onclick="document.getElementById('fileInput').click()">
-      <div class="scan-icon">📷</div>
-      <div class="scan-text">Dotknij aby wybrać zdjęcie</div>
-      <div class="scan-sub">Paragon, screenshot ze sklepu, Frisco, Glovo...</div>
-    </div>
-
-    <div id="scanPreview">
-      <img id="previewImg" src="" alt="Podgląd">
-    </div>
-
-    <div class="loader" id="scanLoader">
-      <div class="loader-spinner"></div>
-      <div>Claude analizuje paragon...</div>
-    </div>
-
-    <div class="scan-result" id="scanResult">
-      <div class="scan-result-title">Wykryte pozycje</div>
-      <div id="scanItems"></div>
-      <div class="scan-total">
-        <span>Suma</span>
-        <span id="scanTotalAmount">0 zł</span>
+      <label class="form-label">Description</label>
+      <div class="input-with-mic">
+        <input type="text" class="form-input" id="inputDesc" placeholder="e.g. Frisco — weekly groceries">
+        <button class="btn-mic" id="micBtn" onclick="toggleVoice('inputDesc','micBtn')" title="Voice note (English)">🎤</button>
       </div>
     </div>
 
-    <!-- Formularz po skanowaniu -->
-    <div id="scanForm" style="display:none;">
-      <label class="form-label" style="margin: 0 16px 6px; display: block;">Kto płacił?</label>
+    <div class="form-group">
+      <label class="form-label">Date</label>
+      <input type="date" class="form-input" id="inputDate">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Note (optional)</label>
+      <div class="input-with-mic">
+        <input type="text" class="form-input" id="inputNote" placeholder="Additional info...">
+        <button class="btn-mic" id="micBtnNote" onclick="toggleVoice('inputNote','micBtnNote')" title="Voice note (English)">🎤</button>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="addTransaction()" id="btnAdd">Save transaction</button>
+  </div>
+
+  <!-- SCAN -->
+  <div id="pageScan">
+    <div class="page-header">
+      <h1>Scan receipt</h1>
+      <div class="sub">Upload one or more photos</div>
+    </div>
+
+    <input type="file" id="fileInput" accept="image/*" multiple style="display:none" onchange="handleImagesUpload(event)">
+
+    <div class="scan-zone" onclick="document.getElementById('fileInput').click()">
+      <div class="scan-icon">📷</div>
+      <div class="scan-text">Tap to select photos</div>
+      <div class="scan-sub">Receipt, store screenshot, Frisco, Glovo...</div>
+    </div>
+
+    <!-- Multi-image thumbnails -->
+    <div class="scan-previews" id="scanPreviews" style="display:none"></div>
+
+    <div class="loader" id="scanLoader">
+      <div class="loader-spinner"></div>
+      <div>Claude is analyzing...</div>
+    </div>
+
+    <div class="scan-result" id="scanResult">
+      <div class="scan-result-title">Detected items</div>
+      <div id="scanItems"></div>
+      <div class="scan-total"><span>Total</span><span id="scanTotalAmount">0 PLN</span></div>
+    </div>
+
+    <div id="scanForm" style="display:none">
+      <label class="form-label" style="margin:0 16px 6px;display:block">Who paid?</label>
       <div class="person-toggle">
         <button class="person-btn active-bartosz" id="scanBtnBartosz" onclick="selectScanPerson('Bartosz')">Bartosz</button>
         <button class="person-btn" id="scanBtnSelin" onclick="selectScanPerson('Selin')">Selin</button>
       </div>
-
-      <label class="form-label" style="margin: 0 16px 6px; display: block;">Podział</label>
+      <label class="form-label" style="margin:0 16px 6px;display:block">Split</label>
       <div class="split-toggle">
-        <button class="split-btn active" id="scanBtnWspolne" onclick="selectScanSplit('wspólne')">🤝 Wspólne</button>
-        <button class="split-btn" id="scanBtnOsobiste" onclick="selectScanSplit('osobiste')">👤 Osobiste</button>
+        <button class="split-btn active" id="scanBtnShared" onclick="selectScanSplit('shared')">🤝 Shared</button>
+        <button class="split-btn" id="scanBtnPersonal" onclick="selectScanSplit('personal')">👤 Personal</button>
       </div>
-
       <div class="form-group">
-        <label class="form-label">Opis</label>
-        <input type="text" class="form-input" id="scanOpis" placeholder="np. Frisco — zakupy">
+        <label class="form-label">Description</label>
+        <input type="text" class="form-input" id="scanDesc" placeholder="e.g. Frisco — groceries">
       </div>
-
-      <button class="btn-primary" onclick="saveScanTransaction()" id="btnSaveScan">
-        Zapisz do budżetu
-      </button>
-
-      <!-- ukryta kategoria — ustawiana automatycznie -->
-      <select id="scanKategoria" style="display:none">
-        <option value="Jedzenie">Jedzenie</option>
-        <option value="Chemia">Chemia</option>
-        <option value="Wyjście">Wyjście</option>
-        <option value="Transport">Transport</option>
-        <option value="Dom">Dom</option>
-        <option value="Zdrowie">Zdrowie</option>
-        <option value="Rozrywka">Rozrywka</option>
-        <option value="Ubrania">Ubrania</option>
-        <option value="Podróże">Podróże</option>
-        <option value="Inne">Inne</option>
+      <button class="btn-primary" onclick="saveScanTransaction()" id="btnSaveScan">Save to budget</button>
+      <select id="scanCategory" style="display:none">
+        <option value="Food">Food</option><option value="Household">Household</option>
+        <option value="Dining out">Dining out</option><option value="Transport">Transport</option>
+        <option value="Home">Home</option><option value="Health">Health</option>
+        <option value="Entertainment">Entertainment</option><option value="Clothing">Clothing</option>
+        <option value="Travel">Travel</option><option value="Other">Other</option>
       </select>
     </div>
   </div>
 
-  <!-- ===== HISTORIA ===== -->
+  <!-- HISTORY -->
   <div id="pageHistory">
-    <div class="page-header">
-      <h1>Historia</h1>
-    </div>
-
+    <div class="page-header"><h1>History</h1></div>
     <div class="filter-row">
-      <button class="filter-chip active" onclick="filterHistory('wszystkie')" id="filter-wszystkie">Wszystkie</button>
+      <button class="filter-chip active" onclick="filterHistory('all')" id="filter-all">All</button>
       <button class="filter-chip" onclick="filterHistory('Bartosz')" id="filter-Bartosz">Bartosz</button>
       <button class="filter-chip" onclick="filterHistory('Selin')" id="filter-Selin">Selin</button>
-      <button class="filter-chip" onclick="filterHistory('Jedzenie')" id="filter-Jedzenie">🛒 Jedzenie</button>
-      <button class="filter-chip" onclick="filterHistory('Chemia')" id="filter-Chemia">🧴 Chemia</button>
-      <button class="filter-chip" onclick="filterHistory('Wyjście')" id="filter-Wyjście">🍽️ Wyjście</button>
+      <button class="filter-chip" onclick="filterHistory('Food')" id="filter-Food">🛒 Food</button>
+      <button class="filter-chip" onclick="filterHistory('Household')" id="filter-Household">🧴 Household</button>
+      <button class="filter-chip" onclick="filterHistory('Dining out')" id="filter-Dining out">🍽️ Dining</button>
       <button class="filter-chip" onclick="filterHistory('Transport')" id="filter-Transport">🚗 Transport</button>
-      <button class="filter-chip" onclick="filterHistory('Dom')" id="filter-Dom">🏠 Dom</button>
-      <button class="filter-chip" onclick="filterHistory('Zdrowie')" id="filter-Zdrowie">💊 Zdrowie</button>
-      <button class="filter-chip" onclick="filterHistory('Rozrywka')" id="filter-Rozrywka">🎉 Rozrywka</button>
+      <button class="filter-chip" onclick="filterHistory('Home')" id="filter-Home">🏠 Home</button>
+      <button class="filter-chip" onclick="filterHistory('Health')" id="filter-Health">💊 Health</button>
+      <button class="filter-chip" onclick="filterHistory('Entertainment')" id="filter-Entertainment">🎉 Fun</button>
     </div>
-
-    <div class="history-chart-wrap" id="historyChartWrap" style="display:none;">
-      <div class="card" style="margin: 0 0 8px;">
-        <div class="card-title">Suma per kategoria</div>
+    <div class="history-chart-wrap" id="historyChartWrap" style="display:none">
+      <div class="card" style="margin:0 0 8px">
+        <div class="card-title">Spending by category</div>
         <div id="historyBars"></div>
       </div>
     </div>
     <div class="trans-list" id="transList"></div>
   </div>
 
-  <!-- ===== USTAWIENIA ===== -->
+  <!-- SETTINGS -->
   <div id="pageSettings">
-    <div class="page-header">
-      <h1>Ustawienia</h1>
-    </div>
-
-    <div style="height: 16px;"></div>
-
+    <div class="page-header"><h1>Settings</h1></div>
+    <div style="height:16px"></div>
     <div class="settings-section">
-      <div class="settings-title">Zalogowany jako</div>
-      <div class="user-card" id="userCard">
+      <div class="settings-title">Logged in as</div>
+      <div class="user-card">
         <div class="user-avatar bartosz" id="userAvatar">B</div>
-        <div>
-          <div class="user-name" id="userName">Bartosz</div>
-          <div class="user-email" id="userEmail">-</div>
-        </div>
+        <div><div class="user-name" id="userName">Bartosz</div><div class="user-email" id="userEmail">-</div></div>
       </div>
       <div class="user-card">
         <div class="user-avatar selin">S</div>
-        <div>
-          <div class="user-name">Selin</div>
-          <div class="user-email">selinkarakus33@gmail.com</div>
-        </div>
+        <div><div class="user-name">Selin</div><div class="user-email">selinkarakus33@gmail.com</div></div>
       </div>
     </div>
-
     <div class="settings-section">
       <div class="settings-title">Google Sheets</div>
       <div class="settings-row">
@@ -804,112 +467,156 @@
         <input type="text" class="settings-input" id="settingsSheetId" placeholder="1abc...xyz">
       </div>
     </div>
-
     <div class="settings-section">
-      <div class="settings-title">Anthropic API (skanowanie paragonów)</div>
+      <div class="settings-title">Anthropic API (receipt scanning)</div>
       <div class="settings-row">
-        <div class="settings-label">Klucz API (sk-ant-...)</div>
+        <div class="settings-label">API Key (sk-ant-...)</div>
         <input type="password" class="settings-input" id="settingsAnthropicKey" placeholder="sk-ant-api03-...">
       </div>
     </div>
-
-    <div style="margin: 0 16px;">
-      <button class="btn-save" onclick="saveSettings()">Zapisz ustawienia</button>
-      <button class="btn-logout" onclick="signOut()">Wyloguj się</button>
+    <div class="settings-section">
+      <div class="settings-title">Auto-refresh</div>
+      <div class="settings-row" style="display:flex;align-items:center;justify-content:space-between">
+        <div class="settings-label" style="margin:0">Sync every 30 seconds</div>
+        <input type="checkbox" id="autoRefreshToggle" onchange="toggleAutoRefresh()" style="width:20px;height:20px;cursor:pointer">
+      </div>
+    </div>
+    <div style="margin:0 16px">
+      <button class="btn-save" onclick="saveSettings()">Save settings</button>
+      <button class="btn-logout" onclick="signOut()">Sign out</button>
     </div>
   </div>
 
-  <!-- MODAL SZCZEGÓŁÓW TRANSAKCJI -->
+  <!-- TRANSACTION DETAIL MODAL -->
   <div id="transModal" class="modal-overlay" style="display:none" onclick="closeModal(event)">
     <div class="modal-box">
       <div class="modal-handle"></div>
-      <div class="modal-title" id="modalTitle">Szczegóły</div>
+      <div class="modal-title" id="modalTitle">Details</div>
       <div class="modal-sub" id="modalSub"></div>
       <div id="modalItems"></div>
-      <button class="modal-close" onclick="document.getElementById('transModal').style.display='none'">Zamknij</button>
+      <div class="modal-actions">
+        <button class="btn-edit-action edit" onclick="openEditModal()">✏️ Edit</button>
+        <button class="btn-edit-action delete" onclick="deleteFromModal()">🗑️ Delete</button>
+      </div>
+      <button class="modal-close" onclick="document.getElementById('transModal').style.display='none'">Close</button>
     </div>
   </div>
 
-</div><!-- koniec #app -->
+  <!-- EDIT TRANSACTION MODAL -->
+  <div id="editModal" class="modal-overlay" style="display:none" onclick="closeEditModal(event)">
+    <div class="modal-box">
+      <div class="modal-handle"></div>
+      <div style="font-size:17px;font-weight:700;margin-bottom:16px">Edit transaction</div>
 
-<!-- TOAST -->
-<div id="toast"></div>
+      <div class="edit-field">
+        <label>Who paid?</label>
+        <div class="edit-person-row">
+          <button class="edit-toggle-btn active-bartosz" id="editBtnBartosz" onclick="setEditPerson('Bartosz')">Bartosz</button>
+          <button class="edit-toggle-btn" id="editBtnSelin" onclick="setEditPerson('Selin')">Selin</button>
+        </div>
+      </div>
 
-<!-- LOADING OVERLAY -->
-<div id="loadingOverlay">
-  <div class="loading-box">
-    <div class="loader-spinner"></div>
-    <div class="loading-text" id="loadingText">Zapisywanie...</div>
+      <div class="edit-field">
+        <label>Amount (PLN)</label>
+        <input type="number" id="editAmount" step="0.01" min="0" inputmode="decimal">
+      </div>
+
+      <div class="edit-field">
+        <label>Category</label>
+        <select id="editCategory">
+          <option value="Food">🛒 Food</option>
+          <option value="Household">🧴 Household / Drugstore</option>
+          <option value="Dining out">🍽️ Dining out</option>
+          <option value="Transport">🚗 Transport</option>
+          <option value="Home">🏠 Home / Bills</option>
+          <option value="Health">💊 Health</option>
+          <option value="Entertainment">🎉 Entertainment</option>
+          <option value="Clothing">👗 Clothing</option>
+          <option value="Travel">✈️ Travel</option>
+          <option value="Other">📦 Other</option>
+        </select>
+      </div>
+
+      <div class="edit-field">
+        <label>Description</label>
+        <input type="text" id="editDesc" placeholder="Description">
+      </div>
+
+      <div class="edit-field">
+        <label>Date</label>
+        <input type="date" id="editDate">
+      </div>
+
+      <div class="edit-field">
+        <label>Split</label>
+        <div class="edit-split-row">
+          <button class="edit-toggle-btn active-shared" id="editBtnShared" onclick="setEditSplit('shared')">🤝 Shared</button>
+          <button class="edit-toggle-btn" id="editBtnPersonal" onclick="setEditSplit('personal')">👤 Personal</button>
+        </div>
+      </div>
+
+      <div class="edit-field">
+        <label>Note (optional)</label>
+        <input type="text" id="editNote" placeholder="Additional info...">
+      </div>
+
+      <button class="btn-save-edit" id="btnSaveEdit" onclick="saveEdit()">Save changes</button>
+      <button class="modal-close" onclick="document.getElementById('editModal').style.display='none'">Cancel</button>
+    </div>
   </div>
+
 </div>
 
-<!-- Google Identity Services -->
-<script src="https://accounts.google.com/gsi/client"></script>
+<div id="toast"></div>
+<div id="loadingOverlay"><div class="loading-box"><div class="loader-spinner"></div><div class="loading-text" id="loadingText">Saving...</div></div></div>
 
+<script src="https://accounts.google.com/gsi/client"></script>
 <script>
-// ===== KONFIGURACJA =====
 const CLIENT_ID = '678355265949-sgdj5qan88mm09sse4phmo80dn0a964n.apps.googleusercontent.com';
 const SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email';
 
-// ===== STAN APLIKACJI =====
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+const CAT_ICONS = {
+  'Food':'🛒','Household':'🧴','Dining out':'🍽️','Transport':'🚗',
+  'Home':'🏠','Health':'💊','Entertainment':'🎉','Clothing':'👗','Travel':'✈️','Other':'📦'
+};
+const CAT_COLORS = {
+  'Food':'#34d399','Household':'#a78bfa','Dining out':'#f472b6','Transport':'#60a5fa',
+  'Home':'#fbbf24','Health':'#f87171','Entertainment':'#fb923c','Clothing':'#e879f9','Travel':'#2dd4bf','Other':'#94a3b8'
+};
+
+// Map old Polish categories to English (for existing data)
+const CAT_MAP = {
+  'Jedzenie':'Food','Chemia':'Household','Wyjście':'Dining out','Transport':'Transport',
+  'Dom':'Home','Zdrowie':'Health','Rozrywka':'Entertainment','Ubrania':'Clothing',
+  'Podróże':'Travel','Inne':'Other'
+};
+
 let state = {
-  user: null,
-  accessToken: null,
+  user: null, accessToken: null,
   sheetId: localStorage.getItem('sheetId') || '1mgmENMueQu4uoRPiMnU_Ov7hLcMAfHR6MLYqlSmGYTs',
   anthropicKey: localStorage.getItem('anthropicKey') || '',
-  transactions: [],
-  currentPage: 'dashboard',
-  selectedPerson: 'Bartosz',
-  selectedType: 'wydatek',
-  selectedSplit: 'wspólne',
-  scanPerson: 'Bartosz',
-  scanSplit: 'wspólne',
-  scanTotal: 0,
-  scanDescription: '',
-  currentMonth: new Date().getMonth(),
-  currentYear: new Date().getFullYear(),
-  historyFilter: 'wszystkie',
+  transactions: [], currentPage: 'dashboard',
+  selectedPerson: 'Bartosz', selectedType: 'expense', selectedSplit: 'shared',
+  scanPerson: 'Bartosz', scanSplit: 'shared', scanTotal: 0, scanDesc: '', scanPozycje: [],
+  currentMonth: new Date().getMonth(), currentYear: new Date().getFullYear(),
+  historyFilter: 'all', autoRefreshInterval: null,
+  pendingImages: [], // multi-image support
 };
 
-// ===== NAZWY MIESIĘCY =====
-const MONTHS = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
-
-// ===== IKONY KATEGORII =====
-const CAT_ICONS = {
-  'Jedzenie': '🛒', 'Chemia': '🧴', 'Wyjście': '🍽️',
-  'Transport': '🚗', 'Dom': '🏠', 'Zdrowie': '💊',
-  'Rozrywka': '🎉', 'Ubrania': '👗', 'Podróże': '✈️', 'Inne': '📦'
-};
-
-const CAT_COLORS = {
-  'Jedzenie': '#34d399', 'Chemia': '#a78bfa', 'Wyjście': '#f472b6',
-  'Transport': '#60a5fa', 'Dom': '#fbbf24', 'Zdrowie': '#f87171',
-  'Rozrywka': '#fb923c', 'Ubrania': '#e879f9', 'Podróże': '#2dd4bf', 'Inne': '#94a3b8'
-};
-
-// ===== LOGOWANIE GOOGLE =====
+// ===== AUTH =====
 function signIn() {
   const client = google.accounts.oauth2.initTokenClient({
-    client_id: CLIENT_ID,
-    scope: SCOPES,
+    client_id: CLIENT_ID, scope: SCOPES,
     callback: async (response) => {
-      if (response.error) {
-        showToast('Błąd logowania: ' + response.error, 'error');
-        return;
-      }
+      if (response.error) { showToast('Login error: ' + response.error, 'error'); return; }
       state.accessToken = response.access_token;
-
-      // Pobierz info o użytkowniku
       try {
-        const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-          headers: { Authorization: 'Bearer ' + state.accessToken }
-        });
-        const info = await res.json();
-        state.user = info;
+        const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: 'Bearer ' + state.accessToken } });
+        state.user = await res.json();
         onLoginSuccess();
-      } catch(e) {
-        showToast('Błąd pobierania danych użytkownika', 'error');
-      }
+      } catch(e) { showToast('Error fetching user info', 'error'); }
     }
   });
   client.requestAccessToken();
@@ -919,427 +626,327 @@ function onLoginSuccess() {
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
 
-  // Ustal osobę na podstawie emaila
   const email = state.user.email;
-  if (email === 'selinkarakus33@gmail.com') {
-    state.selectedPerson = 'Selin';
-    state.scanPerson = 'Selin';
-  } else {
-    state.selectedPerson = 'Bartosz';
-    state.scanPerson = 'Bartosz';
-  }
+  if (email === 'selinkarakus33@gmail.com') { state.selectedPerson = 'Selin'; state.scanPerson = 'Selin'; }
+  else { state.selectedPerson = 'Bartosz'; state.scanPerson = 'Bartosz'; }
 
-  // Ustaw UI użytkownika
-  document.getElementById('dashboardUser').textContent =
-    'Cześć ' + (state.user.given_name || state.user.email) + '! 👋';
+  const name = state.user.given_name || state.user.email;
+  document.getElementById('dashboardUser').textContent = 'Hey ' + name + '! 👋';
   document.getElementById('userName').textContent = state.user.name || state.user.email;
   document.getElementById('userEmail').textContent = state.user.email;
-  if (state.user.email === 'selinkarakus33@gmail.com') {
-    document.getElementById('userAvatar').className = 'user-avatar selin';
-    document.getElementById('userAvatar').textContent = 'S';
-  }
+  if (email === 'selinkarakus33@gmail.com') { document.getElementById('userAvatar').className = 'user-avatar selin'; document.getElementById('userAvatar').textContent = 'S'; }
 
-  // Załaduj ustawienia
   document.getElementById('settingsSheetId').value = state.sheetId;
   document.getElementById('settingsAnthropicKey').value = state.anthropicKey;
-
-  // Ustaw datę domyślną formularza
-  document.getElementById('inputData').value = new Date().toISOString().split('T')[0];
-
-  // Ustaw domyślną osobę w formularzu
+  document.getElementById('inputDate').value = new Date().toISOString().split('T')[0];
   selectPerson(state.selectedPerson);
 
-  // Zainicjuj arkusz i wczytaj dane
+  // Auto-refresh from localStorage
+  const ar = localStorage.getItem('autoRefresh') === 'true';
+  document.getElementById('autoRefreshToggle').checked = ar;
+  if (ar) startAutoRefresh();
+
   initSheetAndLoad();
 }
 
 function signOut() {
   google.accounts.oauth2.revoke(state.accessToken, () => {});
-  state.user = null;
-  state.accessToken = null;
-  state.transactions = [];
+  stopAutoRefresh();
+  state.user = null; state.accessToken = null; state.transactions = [];
   document.getElementById('loginScreen').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
 }
 
-// ===== INICJALIZACJA ARKUSZA =====
+// ===== AUTO-REFRESH =====
+function toggleAutoRefresh() {
+  const on = document.getElementById('autoRefreshToggle').checked;
+  localStorage.setItem('autoRefresh', on);
+  if (on) startAutoRefresh(); else stopAutoRefresh();
+  showToast(on ? 'Auto-refresh on ✓' : 'Auto-refresh off', 'success');
+}
+
+function startAutoRefresh() {
+  stopAutoRefresh();
+  document.getElementById('refreshDot').style.display = 'inline-block';
+  state.autoRefreshInterval = setInterval(async () => {
+    if (!state.accessToken) return;
+    try {
+      await loadTransactions();
+      if (state.currentPage === 'dashboard') updateDashboard();
+      if (state.currentPage === 'history') filterHistory(state.historyFilter);
+    } catch(e) { console.log('Auto-refresh error:', e); }
+  }, 30000);
+}
+
+function stopAutoRefresh() {
+  if (state.autoRefreshInterval) { clearInterval(state.autoRefreshInterval); state.autoRefreshInterval = null; }
+  document.getElementById('refreshDot').style.display = 'none';
+}
+
+// ===== SHEETS INIT =====
 async function initSheetAndLoad() {
-  showLoading('Ładowanie danych...');
+  showLoading('Loading data...');
   try {
     await ensureSheetsExist();
     await loadTransactions();
     updateDashboard();
   } catch(e) {
-    console.error('Błąd inicjalizacji:', e);
-    showToast('Błąd połączenia z Google Sheets', 'error');
+    console.error('Init error:', e);
+    showToast('Error connecting to Google Sheets', 'error');
   }
   hideLoading();
 }
 
-// Upewnij się że arkusze "Transakcje" i "Budżety" istnieją
 async function ensureSheetsExist() {
   const res = await sheetsRequest(`https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}`, 'GET');
   const sheets = res.sheets.map(s => s.properties.title);
-
   const toCreate = [];
-  if (!sheets.includes('Transakcje')) toCreate.push({ properties: { title: 'Transakcje' } });
-  if (!sheets.includes('Budżety')) toCreate.push({ properties: { title: 'Budżety' } });
-
+  if (!sheets.includes('Transactions')) toCreate.push({ properties: { title: 'Transactions' } });
+  if (!sheets.includes('Budgets')) toCreate.push({ properties: { title: 'Budgets' } });
   if (toCreate.length > 0) {
-    await sheetsRequest(
-      `https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}:batchUpdate`,
-      'POST',
-      { requests: toCreate.map(s => ({ addSheet: s })) }
-    );
+    await sheetsRequest(`https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}:batchUpdate`, 'POST', { requests: toCreate.map(s => ({ addSheet: s })) });
   }
-
-  // Sprawdź czy nagłówki istnieją
-  const headers = await sheetsRequest(
-    `https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/Transakcje!A1:I1`,
-    'GET'
-  );
-
+  // Check if Transactions sheet has headers
+  let sheetName = sheets.includes('Transactions') ? 'Transactions' : (sheets.includes('Transakcje') ? 'Transakcje' : 'Transactions');
+  state.activeSheet = sheetName;
+  const headers = await sheetsRequest(`https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/${sheetName}!A1:I1`, 'GET');
   if (!headers.values || headers.values.length === 0) {
-    // Dodaj nagłówki
-    await sheetsRequest(
-      `https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/Transakcje!A1:I1?valueInputOption=RAW`,
-      'PUT',
-      { values: [['ID', 'Data', 'Osoba', 'Kategoria', 'Opis', 'Kwota', 'Typ', 'Podział', 'Notatka']] }
-    );
+    await sheetsRequest(`https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/${sheetName}!A1:I1?valueInputOption=RAW`, 'PUT',
+      { values: [['ID','Date','Person','Category','Description','Amount','Type','Split','Note']] });
   }
 }
 
-// ===== WCZYTAJ TRANSAKCJE =====
 async function loadTransactions() {
-  const res = await sheetsRequest(
-    `https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/Transakcje!A2:I`,
-    'GET'
-  );
-
+  const sheet = state.activeSheet || 'Transactions';
+  const res = await sheetsRequest(`https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/${sheet}!A2:I`, 'GET');
   state.transactions = [];
   if (res.values) {
     state.transactions = res.values.map(row => ({
-      id: row[0] || '',
-      data: row[1] || '',
-      osoba: row[2] || '',
-      kategoria: row[3] || '',
-      opis: row[4] || '',
-      kwota: parseFloat(row[5]) || 0,
-      typ: row[6] || 'wydatek',
-      podzial: row[7] || 'wspólne',
+      id: row[0] || '', data: row[1] || '', osoba: row[2] || '',
+      kategoria: CAT_MAP[row[3]] || row[3] || '',
+      opis: row[4] || '', kwota: parseFloat(row[5]) || 0,
+      typ: row[6] === 'przychod' ? 'income' : (row[6] === 'income' ? 'income' : 'expense'),
+      podzial: row[7] === 'wspólne' ? 'shared' : (row[7] === 'osobiste' ? 'personal' : (row[7] || 'shared')),
       notatka: row[8] || ''
     }));
   }
 }
 
-// ===== DODAJ TRANSAKCJĘ =====
+// ===== ADD TRANSACTION =====
 async function addTransaction() {
-  const kwota = parseFloat(document.getElementById('inputKwota').value);
-  const opis = document.getElementById('inputOpis').value.trim();
-  const kategoria = document.getElementById('inputKategoria').value;
-  const data = document.getElementById('inputData').value;
-  const notatka = document.getElementById('inputNotatka').value.trim();
+  const amount = parseFloat(document.getElementById('inputAmount').value);
+  const desc = document.getElementById('inputDesc').value.trim();
+  const category = document.getElementById('inputCategory').value;
+  const date = document.getElementById('inputDate').value;
+  const note = document.getElementById('inputNote').value.trim();
 
-  if (!kwota || kwota <= 0) { showToast('Wpisz poprawną kwotę', 'error'); return; }
-  if (!opis) { showToast('Wpisz opis', 'error'); return; }
-  if (!data) { showToast('Wybierz datę', 'error'); return; }
+  if (!amount || amount <= 0) { showToast('Enter a valid amount', 'error'); return; }
+  if (!desc) { showToast('Enter a description', 'error'); return; }
+  if (!date) { showToast('Select a date', 'error'); return; }
 
-  const row = [
-    Date.now().toString(),
-    data,
-    state.selectedPerson,
-    kategoria,
-    opis,
-    kwota.toString(),
-    state.selectedType,
-    state.selectedSplit,
-    notatka
-  ];
+  const sheet = state.activeSheet || 'Transactions';
+  const row = [Date.now().toString(), date, state.selectedPerson, category, desc, amount.toString(), state.selectedType, state.selectedSplit, note];
 
   document.getElementById('btnAdd').disabled = true;
-  showLoading('Zapisywanie...');
-
+  showLoading('Saving...');
   try {
-    await sheetsRequest(
-      `https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/Transakcje!A:I:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
-      'POST',
-      { values: [row] }
-    );
-
-    // Resetuj formularz
-    document.getElementById('inputKwota').value = '';
-    document.getElementById('inputOpis').value = '';
-    document.getElementById('inputNotatka').value = '';
-    document.getElementById('inputData').value = new Date().toISOString().split('T')[0];
-
+    await sheetsRequest(`https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/${sheet}!A:I:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`, 'POST', { values: [row] });
+    document.getElementById('inputAmount').value = '';
+    document.getElementById('inputDesc').value = '';
+    document.getElementById('inputNote').value = '';
+    document.getElementById('inputDate').value = new Date().toISOString().split('T')[0];
     await loadTransactions();
     updateDashboard();
-    showToast('Zapisano! ✓', 'success');
+    showToast('Saved! ✓', 'success');
     showPage('dashboard');
-  } catch(e) {
-    console.error('Błąd zapisu:', e);
-    showToast('Błąd zapisu do Sheets', 'error');
-  }
-
+  } catch(e) { console.error(e); showToast('Error saving to Sheets', 'error'); }
   document.getElementById('btnAdd').disabled = false;
   hideLoading();
 }
 
-// ===== SKANER PARAGONÓW (CLAUDE API) =====
-function handleImageUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
+// ===== MULTI-IMAGE SCAN =====
+function handleImagesUpload(event) {
+  const files = Array.from(event.target.files);
+  if (!files.length) return;
 
-  // Pokaż podgląd
-  const reader = new FileReader();
-  reader.onload = async (e) => {
-    const base64 = e.target.result.split(',')[1];
-    const mimeType = file.type;
+  state.pendingImages = [];
+  const previewsEl = document.getElementById('scanPreviews');
+  previewsEl.innerHTML = '';
+  previewsEl.style.display = 'flex';
 
-    document.getElementById('previewImg').src = e.target.result;
-    document.getElementById('scanPreview').style.display = 'block';
-    document.getElementById('scanResult').style.display = 'none';
-    document.getElementById('scanForm').style.display = 'none';
+  document.getElementById('scanResult').style.display = 'none';
+  document.getElementById('scanForm').style.display = 'none';
 
-    await analyzeScan(base64, mimeType);
-  };
-  reader.readAsDataURL(file);
+  let loaded = 0;
+  files.forEach((file, i) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      state.pendingImages[i] = { base64: e.target.result.split(',')[1], mimeType: file.type };
+      loaded++;
+
+      // Thumbnail
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.className = 'scan-preview-thumb' + (i === 0 ? ' active' : '');
+      previewsEl.appendChild(img);
+
+      if (loaded === files.length) analyzeAllImages();
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // Add more button
+  const addMore = document.createElement('div');
+  addMore.className = 'scan-add-more';
+  addMore.textContent = '+';
+  addMore.onclick = () => document.getElementById('fileInput').click();
+  previewsEl.appendChild(addMore);
 }
 
-async function analyzeScan(base64, mimeType) {
-  if (!state.anthropicKey) {
-    showToast('Dodaj klucz Anthropic API w Ustawieniach', 'error');
-    return;
-  }
-
+async function analyzeAllImages() {
+  if (!state.anthropicKey) { showToast('Add Anthropic API key in Settings', 'error'); return; }
   document.getElementById('scanLoader').style.display = 'block';
 
-  const prompt = `Przeanalizuj ten paragon lub screenshot zakupów. 
-Zwróć TYLKO JSON w tym formacie (bez żadnego innego tekstu):
+  const prompt = `Analyze this receipt or shopping screenshot. If there are multiple images, combine all items.
+Return ONLY JSON (no other text):
 {
-  "sklep": "nazwa sklepu lub serwisu",
-  "pozycje": [
-    {"nazwa": "nazwa produktu", "kwota": 12.50, "kategoria": "Jedzenie"}
-  ],
-  "suma": 45.00,
-  "kategoria_glowna": "Jedzenie",
-  "opis": "krótki opis np. Frisco - zakupy"
+  "store": "store or service name",
+  "items": [{"name": "product name", "amount": 12.50, "category": "Food"}],
+  "total": 45.00,
+  "main_category": "Food",
+  "description": "short description e.g. Frisco - groceries"
 }
-
-Kategorie: Jedzenie, Chemia, Wyjście, Transport, Dom, Zdrowie, Rozrywka, Ubrania, Podróże, Inne.
-Zasady: produkty spożywcze → Jedzenie, kosmetyki/drogeria → Chemia, restauracje/delivery → Wyjście.
-Jeśli nie możesz odczytać kwoty, wpisz 0.`;
+Categories: Food, Household, Dining out, Transport, Home, Health, Entertainment, Clothing, Travel, Other.
+Rules: groceries→Food, cosmetics/drugstore→Household, restaurants/delivery→Dining out.
+If amount unreadable, use 0.`;
 
   try {
+    // Build content array with all images
+    const content = state.pendingImages.map(img => ({
+      type: 'image', source: { type: 'base64', media_type: img.mimeType, data: img.base64 }
+    }));
+    content.push({ type: 'text', text: prompt });
+
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': state.anthropicKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{
-          role: 'user',
-          content: [
-            {
-              type: 'image',
-              source: { type: 'base64', media_type: mimeType, data: base64 }
-            },
-            { type: 'text', text: prompt }
-          ]
-        }]
-      })
+      headers: { 'Content-Type': 'application/json', 'x-api-key': state.anthropicKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1500, messages: [{ role: 'user', content }] })
     });
 
     const data = await response.json();
-
     if (data.error) throw new Error(data.error.message);
-
-    const text = data.content[0].text.trim();
-    // Usuń ewentualne backticki
-    const clean = text.replace(/```json|```/g, '').trim();
-    const parsed = JSON.parse(clean);
-
-    displayScanResult(parsed);
+    const clean = data.content[0].text.trim().replace(/```json|```/g, '').trim();
+    displayScanResult(JSON.parse(clean));
   } catch(e) {
-    console.error('Błąd skanowania:', e);
-    showToast('Błąd analizy: ' + e.message, 'error');
+    console.error('Scan error:', e);
+    showToast('Analysis error: ' + e.message, 'error');
   }
-
   document.getElementById('scanLoader').style.display = 'none';
 }
 
 function displayScanResult(data) {
   const itemsEl = document.getElementById('scanItems');
   itemsEl.innerHTML = '';
+  const items = data.items || data.pozycje || [];
+  items.forEach(item => {
+    const name = item.name || item.nazwa || '';
+    const amount = item.amount || item.kwota || 0;
+    const cat = CAT_MAP[item.category || item.kategoria] || item.category || item.kategoria || '';
+    const div = document.createElement('div');
+    div.className = 'scan-item';
+    div.innerHTML = `<span class="scan-item-name">${name}</span><span class="scan-item-cat">${cat}</span><span class="scan-item-price">${amount.toFixed(2)} PLN</span>`;
+    itemsEl.appendChild(div);
+  });
 
-  if (data.pozycje && data.pozycje.length > 0) {
-    data.pozycje.forEach(item => {
-      const div = document.createElement('div');
-      div.className = 'scan-item';
-      div.innerHTML = `
-        <span class="scan-item-name">${item.nazwa}</span>
-        <span class="scan-item-cat">${item.kategoria || ''}</span>
-        <span class="scan-item-price">${item.kwota.toFixed(2)} zł</span>
-      `;
-      itemsEl.appendChild(div);
-    });
-  }
-
-  const suma = data.suma || 0;
-  document.getElementById('scanTotalAmount').textContent = suma.toFixed(2) + ' zł';
+  const total = data.total || data.suma || 0;
+  document.getElementById('scanTotalAmount').textContent = total.toFixed(2) + ' PLN';
   document.getElementById('scanResult').style.display = 'block';
 
-  // Ustaw dane w formularzu
-  state.scanTotal = suma;
-  state.scanPozycje = data.pozycje || [];
-  state.scanDescription = data.opis || data.sklep || 'Zakupy';
+  state.scanTotal = total;
+  state.scanPozycje = items;
+  state.scanDesc = data.description || data.opis || data.store || data.sklep || 'Shopping';
+  document.getElementById('scanDesc').value = state.scanDesc;
 
-  document.getElementById('scanOpis').value = state.scanDescription;
-
-  // Ustaw kategorię
-  const sel = document.getElementById('scanKategoria');
-  if (data.kategoria_glowna) {
-    for (let i = 0; i < sel.options.length; i++) {
-      if (sel.options[i].value === data.kategoria_glowna) {
-        sel.selectedIndex = i;
-        break;
-      }
-    }
+  const mainCat = CAT_MAP[data.main_category || data.kategoria_glowna] || data.main_category || '';
+  const sel = document.getElementById('scanCategory');
+  for (let i = 0; i < sel.options.length; i++) {
+    if (sel.options[i].value === mainCat) { sel.selectedIndex = i; break; }
   }
 
   document.getElementById('scanForm').style.display = 'block';
 }
 
 async function saveScanTransaction() {
-  if (!state.scanTotal || state.scanTotal <= 0) {
-    showToast('Brak kwoty do zapisania', 'error');
-    return;
-  }
+  if (!state.scanTotal || state.scanTotal <= 0) { showToast('No amount to save', 'error'); return; }
 
-  // Opis z listą pozycji
-  const pozycjeOpis = state.scanPozycje && state.scanPozycje.length > 0
-    ? state.scanPozycje.map(p => p.nazwa + ' ' + p.kwota.toFixed(2) + 'zł').join(', ')
+  const itemsDesc = state.scanPozycje.length > 0
+    ? state.scanPozycje.map(p => (p.name || p.nazwa || '') + ' ' + (p.amount || p.kwota || 0).toFixed(2) + 'PLN').join(', ')
     : '';
-  const opisGlowny = document.getElementById('scanOpis').value || state.scanDescription;
-  const opisFull = pozycjeOpis ? opisGlowny + ' | ' + pozycjeOpis : opisGlowny;
+  const mainDesc = document.getElementById('scanDesc').value || state.scanDesc;
+  const fullDesc = itemsDesc ? mainDesc + ' | ' + itemsDesc : mainDesc;
+  const sheet = state.activeSheet || 'Transactions';
 
-  const row = [
-    Date.now().toString(),
-    new Date().toISOString().split('T')[0],
-    state.scanPerson,
-    document.getElementById('scanKategoria').value,
-    opisFull,
-    state.scanTotal.toString(),
-    'wydatek',
-    state.scanSplit,
-    'ze skanera'
-  ];
+  const row = [Date.now().toString(), new Date().toISOString().split('T')[0], state.scanPerson,
+    document.getElementById('scanCategory').value, fullDesc, state.scanTotal.toString(), 'expense', state.scanSplit, 'scanned'];
 
   document.getElementById('btnSaveScan').disabled = true;
-  showLoading('Zapisywanie...');
-
+  showLoading('Saving...');
   try {
-    await sheetsRequest(
-      `https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/Transakcje!A:I:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
-      'POST',
-      { values: [row] }
-    );
-
+    await sheetsRequest(`https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/${sheet}!A:I:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`, 'POST', { values: [row] });
     await loadTransactions();
     updateDashboard();
-    showToast('Paragon zapisany! ✓', 'success');
-
+    showToast('Receipt saved! ✓', 'success');
     // Reset
     document.getElementById('scanResult').style.display = 'none';
-    document.getElementById('scanPreview').style.display = 'none';
+    document.getElementById('scanPreviews').style.display = 'none';
     document.getElementById('scanForm').style.display = 'none';
     document.getElementById('fileInput').value = '';
-    state.scanTotal = 0;
-
+    state.scanTotal = 0; state.pendingImages = [];
     showPage('dashboard');
-  } catch(e) {
-    console.error('Błąd zapisu:', e);
-    showToast('Błąd zapisu', 'error');
-  }
-
+  } catch(e) { console.error(e); showToast('Error saving', 'error'); }
   document.getElementById('btnSaveScan').disabled = false;
   hideLoading();
 }
 
 // ===== DASHBOARD =====
 function updateDashboard() {
-  const year = state.currentYear;
-  const month = state.currentMonth;
-
+  const year = state.currentYear, month = state.currentMonth;
   document.getElementById('monthLabel').textContent = MONTHS[month] + ' ' + year;
 
-  // Filtruj transakcje dla danego miesiąca
   const monthTrans = state.transactions.filter(t => {
     if (!t.data) return false;
     const d = new Date(t.data);
-    return d.getFullYear() === year && d.getMonth() === month && t.typ === 'wydatek';
+    return d.getFullYear() === year && d.getMonth() === month && t.typ === 'expense';
   });
 
-  // Sumy per osoba
-  const bartoszSum = monthTrans
-    .filter(t => t.osoba === 'Bartosz')
-    .reduce((s, t) => s + t.kwota, 0);
-  const selinSum = monthTrans
-    .filter(t => t.osoba === 'Selin')
-    .reduce((s, t) => s + t.kwota, 0);
+  const bartoszSum = monthTrans.filter(t => t.osoba === 'Bartosz').reduce((s,t) => s+t.kwota, 0);
+  const selinSum = monthTrans.filter(t => t.osoba === 'Selin').reduce((s,t) => s+t.kwota, 0);
   const totalSum = bartoszSum + selinSum;
+  const commonSum = monthTrans.filter(t => t.podzial === 'shared').reduce((s,t) => s+t.kwota, 0);
 
-  // Wspólne wydatki
-  const commonSum = monthTrans
-    .filter(t => t.podzial === 'wspólne')
-    .reduce((s, t) => s + t.kwota, 0);
+  document.getElementById('statBartosz').textContent = bartoszSum.toFixed(2) + ' PLN';
+  document.getElementById('statSelin').textContent = selinSum.toFixed(2) + ' PLN';
+  document.getElementById('statTotal').textContent = totalSum.toFixed(2) + ' PLN';
+  document.getElementById('statCommon').textContent = commonSum.toFixed(2) + ' PLN';
 
-  document.getElementById('statBartosz').textContent = bartoszSum.toFixed(2) + ' zł';
-  document.getElementById('statSelin').textContent = selinSum.toFixed(2) + ' zł';
-  document.getElementById('statTotal').textContent = totalSum.toFixed(2) + ' zł';
-  document.getElementById('statCommon').textContent = commonSum.toFixed(2) + ' zł';
-
-  // Rozliczenie wspólnych wydatków
-  const commonBartosz = monthTrans
-    .filter(t => t.podzial === 'wspólne' && t.osoba === 'Bartosz')
-    .reduce((s, t) => s + t.kwota, 0);
-  const commonSelin = monthTrans
-    .filter(t => t.podzial === 'wspólne' && t.osoba === 'Selin')
-    .reduce((s, t) => s + t.kwota, 0);
-
-  const half = commonSum / 2;
-  const diff = commonBartosz - half;
-
+  const commonBartosz = monthTrans.filter(t => t.podzial === 'shared' && t.osoba === 'Bartosz').reduce((s,t) => s+t.kwota, 0);
+  const diff = commonBartosz - commonSum / 2;
   if (Math.abs(diff) < 0.01) {
-    document.getElementById('debtAmount').textContent = '0 zł';
-    document.getElementById('debtDesc').textContent = 'Jesteście kwita 🎉';
+    document.getElementById('debtAmount').textContent = '0 PLN';
+    document.getElementById('debtDesc').textContent = "You're even 🎉";
   } else if (diff > 0) {
-    document.getElementById('debtAmount').textContent = diff.toFixed(2) + ' zł';
-    document.getElementById('debtDesc').textContent = 'Selin jest winna Bartoszowi';
+    document.getElementById('debtAmount').textContent = diff.toFixed(2) + ' PLN';
+    document.getElementById('debtDesc').textContent = 'Selin owes Bartosz';
   } else {
-    document.getElementById('debtAmount').textContent = Math.abs(diff).toFixed(2) + ' zł';
-    document.getElementById('debtDesc').textContent = 'Bartosz jest winny Selin';
+    document.getElementById('debtAmount').textContent = Math.abs(diff).toFixed(2) + ' PLN';
+    document.getElementById('debtDesc').textContent = 'Bartosz owes Selin';
   }
 
-  // Wykres kołowy
   const catSums = {};
-  monthTrans.forEach(t => {
-    catSums[t.kategoria] = (catSums[t.kategoria] || 0) + t.kwota;
-  });
+  monthTrans.forEach(t => { catSums[t.kategoria] = (catSums[t.kategoria] || 0) + t.kwota; });
+  drawPieChart(Object.entries(catSums).sort((a,b) => b[1]-a[1]), totalSum);
 
-  const sortedCats = Object.entries(catSums).sort((a, b) => b[1] - a[1]);
-  drawPieChart(sortedCats, totalSum);
-
-  // Ostatnie 5 transakcji
-  const recent = [...state.transactions]
-    .sort((a, b) => b.id - a.id)
-    .slice(0, 5);
-  renderTransactions(recent, 'recentTrans');
+  renderTransactions([...state.transactions].sort((a,b) => b.id-a.id).slice(0,5), 'recentTrans');
 }
 
 function changeMonth(dir) {
@@ -1349,348 +956,330 @@ function changeMonth(dir) {
   updateDashboard();
 }
 
-// ===== HISTORIA =====
+// ===== HISTORY =====
 function filterHistory(filter) {
   state.historyFilter = filter;
-
   document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
   const chip = document.getElementById('filter-' + filter);
   if (chip) chip.classList.add('active');
 
-  let filtered = [...state.transactions].sort((a, b) => b.id - a.id);
-
-  if (filter === 'Bartosz' || filter === 'Selin') {
-    filtered = filtered.filter(t => t.osoba === filter);
-  } else if (filter !== 'wszystkie') {
-    filtered = filtered.filter(t => t.kategoria === filter);
-  }
+  let filtered = [...state.transactions].sort((a,b) => b.id-a.id);
+  if (filter === 'Bartosz' || filter === 'Selin') filtered = filtered.filter(t => t.osoba === filter);
+  else if (filter !== 'all') filtered = filtered.filter(t => t.kategoria === filter);
 
   renderTransactions(filtered, 'transList');
-
-  // Wykres słupkowy w historii
   drawHistoryBars(filtered);
 }
 
 function drawHistoryBars(trans) {
   const wrap = document.getElementById('historyChartWrap');
   const barsEl = document.getElementById('historyBars');
-
-  const wydatki = trans.filter(t => t.typ === 'wydatek');
-  if (wydatki.length === 0) { wrap.style.display = 'none'; return; }
+  const wydatki = trans.filter(t => t.typ === 'expense');
+  if (!wydatki.length) { wrap.style.display = 'none'; return; }
   wrap.style.display = 'block';
-
   const catSums = {};
-  wydatki.forEach(t => {
-    catSums[t.kategoria] = (catSums[t.kategoria] || 0) + t.kwota;
-  });
-
-  const sorted = Object.entries(catSums).sort((a, b) => b[1] - a[1]);
+  wydatki.forEach(t => { catSums[t.kategoria] = (catSums[t.kategoria]||0) + t.kwota; });
+  const sorted = Object.entries(catSums).sort((a,b) => b[1]-a[1]);
   const maxVal = sorted[0][1];
-
   barsEl.innerHTML = sorted.map(([cat, val]) => {
-    const pct = Math.round(val / maxVal * 100);
+    const pct = Math.round(val/maxVal*100);
     const color = CAT_COLORS[cat] || '#7c6af7';
     return `<div class="hist-bar-row">
-      <div class="hist-bar-label">${CAT_ICONS[cat] || '📦'} ${cat}</div>
-      <div class="hist-bar-track">
-        <div class="hist-bar-fill" style="width:${pct}%; background:${color}">
-          ${pct > 15 ? '<span>' + val.toFixed(0) + ' zł</span>' : ''}
-        </div>
-      </div>
-      <div class="hist-bar-total">${val.toFixed(2)} zł</div>
+      <div class="hist-bar-label">${CAT_ICONS[cat]||'📦'} ${cat}</div>
+      <div class="hist-bar-track"><div class="hist-bar-fill" style="width:${pct}%;background:${color}">${pct>15?'<span>'+val.toFixed(0)+' PLN</span>':''}</div></div>
+      <div class="hist-bar-total">${val.toFixed(2)} PLN</div>
     </div>`;
   }).join('');
 }
 
 function renderTransactions(trans, targetId) {
   const el = document.getElementById(targetId);
-  if (!trans || trans.length === 0) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">💸</div>Brak transakcji</div>';
-    return;
-  }
-
-  // Pokaż delete tylko w historii
+  if (!trans || !trans.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">💸</div>No transactions</div>'; return; }
   const showDelete = targetId === 'transList';
-
   el.innerHTML = trans.map(t => {
-    // Sprawdź czy opis zawiera listę pozycji (separator |)
     const hasItems = t.opis && t.opis.includes(' | ');
-    const clickable = showDelete && hasItems;
-    return `<div class="trans-item" id="row-${t.id}" ${clickable ? `onclick="showTransDetail('${t.id}')" style="cursor:pointer"` : ''}>
-      <div class="trans-icon" style="background: ${CAT_COLORS[t.kategoria] || '#2e2e3e'}22;">
-        ${CAT_ICONS[t.kategoria] || '📦'}
-      </div>
+    const typeClass = t.typ === 'income' ? 'income' : 'expense';
+    const clickHandler = showDelete ? `onclick="showTransDetail('${t.id}')" style="cursor:pointer"` : '';
+    return `<div class="trans-item" id="row-${t.id}" ${clickHandler}>
+      <div class="trans-icon" style="background:${CAT_COLORS[t.kategoria]||'#2e2e3e'}22">${CAT_ICONS[t.kategoria]||'📦'}</div>
       <div class="trans-info">
-        <div class="trans-name">${(t.opis || t.kategoria).split(' | ')[0]}</div>
-        <div class="trans-meta">${t.data} · ${t.kategoria} · ${t.podzial}${hasItems ? ' · 👆 szczegóły' : ''}</div>
+        <div class="trans-name">${(t.opis||t.kategoria).split(' | ')[0]}</div>
+        <div class="trans-meta">${t.data} · ${t.kategoria} · ${t.podzial}${hasItems?' · 👆 details':' · 👆 edit'}</div>
       </div>
       <div class="trans-right">
-        <div class="trans-amount ${t.typ}">${t.typ === 'wydatek' ? '−' : '+'}${t.kwota.toFixed(2)} zł</div>
+        <div class="trans-amount ${typeClass}">${t.typ==='income'?'+':'−'}${t.kwota.toFixed(2)} PLN</div>
         <div class="trans-person ${t.osoba.toLowerCase()}">${t.osoba}</div>
       </div>
-      ${showDelete ? `<button class="btn-delete" onclick="event.stopPropagation();deleteTransaction('${t.id}')" title="Usuń">🗑️</button>` : ''}
     </div>`;
   }).join('');
 }
 
-// ===== USUWANIE TRANSAKCJI =====
+// ===== DELETE =====
 async function deleteTransaction(id) {
-  if (!confirm('Usunąć tę transakcję?')) return;
-
-  showLoading('Usuwanie...');
+  if (!confirm('Delete this transaction?')) return;
+  showLoading('Deleting...');
+  const sheet = state.activeSheet || 'Transactions';
   try {
-    // Znajdź numer wiersza w Sheets (wiersze od 2, bo 1 to nagłówek)
-    const res = await sheetsRequest(
-      `https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/Transakcje!A:A`,
-      'GET'
-    );
+    const res = await sheetsRequest(`https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/${sheet}!A:A`, 'GET');
     const rows = res.values || [];
     const rowIndex = rows.findIndex(r => r[0] === id);
+    if (rowIndex < 0) { showToast('Transaction not found', 'error'); hideLoading(); return; }
+    const meta = await sheetsRequest(`https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}`, 'GET');
+    const sheetObj = meta.sheets.find(s => s.properties.title === sheet);
+    await sheetsRequest(`https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}:batchUpdate`, 'POST', {
+      requests: [{ deleteDimension: { range: { sheetId: sheetObj.properties.sheetId, dimension: 'ROWS', startIndex: rowIndex, endIndex: rowIndex+1 } } }]
+    });
+    await loadTransactions();
+    updateDashboard();
+    filterHistory(state.historyFilter);
+    showToast('Deleted ✓', 'success');
+  } catch(e) { console.error(e); showToast('Error deleting', 'error'); }
+  hideLoading();
+}
 
-    if (rowIndex < 0) {
-      showToast('Nie znaleziono transakcji', 'error');
-      hideLoading();
-      return;
-    }
+// ===== VOICE NOTE =====
+let recognition = null;
+function toggleVoice(inputId, btnId) {
+  const btn = document.getElementById(btnId);
+  if (recognition) {
+    recognition.stop(); recognition = null;
+    btn.classList.remove('recording'); btn.textContent = '🎤';
+    return;
+  }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { showToast('Voice not supported in this browser', 'error'); return; }
+  recognition = new SR();
+  recognition.lang = 'en-US';
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.onresult = (e) => {
+    const text = e.results[0][0].transcript;
+    document.getElementById(inputId).value = text;
+    showToast('Got it: "' + text + '"', 'success');
+  };
+  recognition.onerror = (e) => { showToast('Voice error: ' + e.error, 'error'); };
+  recognition.onend = () => { recognition = null; btn.classList.remove('recording'); btn.textContent = '🎤'; };
+  recognition.start();
+  btn.classList.add('recording'); btn.textContent = '🔴';
+  showToast('Listening... (English)', '');
+}
 
-    // Pobierz sheetId arkusza "Transakcje"
-    const meta = await sheetsRequest(
-      `https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}`,
-      'GET'
-    );
-    const sheet = meta.sheets.find(s => s.properties.title === 'Transakcje');
-    const sheetId = sheet.properties.sheetId;
+// ===== PIE CHART =====
+function drawPieChart(sortedCats, total) {
+  const canvas = document.getElementById('pieChart');
+  const legend = document.getElementById('pieLegend');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, 120, 120);
+  legend.innerHTML = '';
+  if (!sortedCats.length) {
+    ctx.beginPath(); ctx.arc(60,60,52,0,Math.PI*2); ctx.fillStyle='#2e2e3e'; ctx.fill();
+    ctx.beginPath(); ctx.arc(60,60,32,0,Math.PI*2); ctx.fillStyle='#1a1a22'; ctx.fill();
+    legend.innerHTML = '<div style="color:var(--text3);font-size:13px">No data</div>'; return;
+  }
+  let angle = -Math.PI/2;
+  sortedCats.forEach(([cat, val]) => {
+    const slice = (val/total)*Math.PI*2;
+    ctx.beginPath(); ctx.moveTo(60,60); ctx.arc(60,60,52,angle,angle+slice); ctx.closePath();
+    ctx.fillStyle = CAT_COLORS[cat]||'#7c6af7'; ctx.fill();
+    angle += slice;
+  });
+  ctx.beginPath(); ctx.arc(60,60,32,0,Math.PI*2); ctx.fillStyle='#1a1a22'; ctx.fill();
+  sortedCats.slice(0,5).forEach(([cat, val]) => {
+    const pct = Math.round(val/total*100);
+    const color = CAT_COLORS[cat]||'#7c6af7';
+    legend.innerHTML += `<div class="pie-legend-item"><div class="pie-dot" style="background:${color}"></div><div class="pie-legend-name">${CAT_ICONS[cat]||''} ${cat}</div><div class="pie-legend-val" style="color:${color}">${pct}%</div></div>`;
+  });
+  if (sortedCats.length > 5) legend.innerHTML += `<div class="pie-legend-item"><div class="pie-legend-name" style="color:var(--text3)">+${sortedCats.length-5} more</div></div>`;
+}
 
-    // Usuń wiersz przez batchUpdate
+// ===== TRANSACTION DETAIL MODAL =====
+let currentEditId = null;
+
+function showTransDetail(id) {
+  const t = state.transactions.find(x => x.id === id);
+  if (!t) return;
+  currentEditId = id;
+  document.getElementById('modalTitle').textContent = (t.opis||'').split(' | ')[0] || t.kategoria;
+  document.getElementById('modalSub').textContent = t.data + ' · ' + t.osoba + ' · ' + t.podzial + ' · ' + t.kwota.toFixed(2) + ' PLN';
+  const itemsEl = document.getElementById('modalItems');
+  const parts = (t.opis||'').split(' | ');
+  if (parts.length > 1) {
+    const items = parts[1].split(', ').map(p => {
+      const m = p.match(/^(.+?)\s+([\d.]+)PLN$/);
+      return m ? { name: m[1], amount: parseFloat(m[2]) } : { name: p, amount: 0 };
+    });
+    itemsEl.innerHTML = items.map(p => `<div class="modal-item"><span class="modal-item-name">${p.name}</span><span class="modal-item-price">−${p.amount.toFixed(2)} PLN</span></div>`).join('')
+      + `<div class="modal-total"><span>Total</span><span>−${t.kwota.toFixed(2)} PLN</span></div>`;
+  } else {
+    itemsEl.innerHTML = `<div class="modal-item"><span class="modal-item-name">${t.opis||t.kategoria}</span><span class="modal-item-price">${t.typ==='income'?'+':'−'}${t.kwota.toFixed(2)} PLN</span></div>`;
+  }
+  document.getElementById('transModal').style.display = 'flex';
+}
+
+function closeModal(e) { if (e.target === document.getElementById('transModal')) document.getElementById('transModal').style.display = 'none'; }
+function closeEditModal(e) { if (e.target === document.getElementById('editModal')) document.getElementById('editModal').style.display = 'none'; }
+
+function deleteFromModal() {
+  document.getElementById('transModal').style.display = 'none';
+  if (currentEditId) deleteTransaction(currentEditId);
+}
+
+function openEditModal() {
+  const t = state.transactions.find(x => x.id === currentEditId);
+  if (!t) return;
+  document.getElementById('transModal').style.display = 'none';
+
+  // Fill form with current values
+  document.getElementById('editAmount').value = t.kwota;
+  document.getElementById('editDesc').value = (t.opis||'').split(' | ')[0];
+  document.getElementById('editDate').value = t.data;
+  document.getElementById('editNote').value = t.notatka || '';
+
+  // Category
+  const sel = document.getElementById('editCategory');
+  for (let i = 0; i < sel.options.length; i++) {
+    if (sel.options[i].value === t.kategoria) { sel.selectedIndex = i; break; }
+  }
+
+  setEditPerson(t.osoba);
+  setEditSplit(t.podzial);
+
+  document.getElementById('editModal').style.display = 'flex';
+}
+
+function setEditPerson(p) {
+  document.getElementById('editBtnBartosz').className = 'edit-toggle-btn' + (p==='Bartosz'?' active-bartosz':'');
+  document.getElementById('editBtnSelin').className = 'edit-toggle-btn' + (p==='Selin'?' active-selin':'');
+  document.getElementById('editBtnBartosz').dataset.selected = p==='Bartosz'?'1':'';
+  document.getElementById('editBtnSelin').dataset.selected = p==='Selin'?'1':'';
+}
+
+function setEditSplit(s) {
+  document.getElementById('editBtnShared').className = 'edit-toggle-btn' + (s==='shared'?' active-shared':'');
+  document.getElementById('editBtnPersonal').className = 'edit-toggle-btn' + (s==='personal'?' active-personal':'');
+  document.getElementById('editBtnShared').dataset.selected = s==='shared'?'1':'';
+  document.getElementById('editBtnPersonal').dataset.selected = s==='personal'?'1':'';
+}
+
+async function saveEdit() {
+  const t = state.transactions.find(x => x.id === currentEditId);
+  if (!t) return;
+
+  const amount = parseFloat(document.getElementById('editAmount').value);
+  const desc = document.getElementById('editDesc').value.trim();
+  const date = document.getElementById('editDate').value;
+  const note = document.getElementById('editNote').value.trim();
+  const category = document.getElementById('editCategory').value;
+  const person = document.getElementById('editBtnBartosz').dataset.selected ? 'Bartosz' : 'Selin';
+  const split = document.getElementById('editBtnShared').dataset.selected ? 'shared' : 'personal';
+
+  if (!amount || amount <= 0) { showToast('Enter a valid amount', 'error'); return; }
+  if (!desc) { showToast('Enter a description', 'error'); return; }
+
+  // Keep items part if it existed
+  const oldParts = (t.opis||'').split(' | ');
+  const fullDesc = oldParts.length > 1 ? desc + ' | ' + oldParts[1] : desc;
+
+  document.getElementById('btnSaveEdit').disabled = true;
+  showLoading('Updating...');
+
+  try {
+    const sheet = state.activeSheet || 'Transactions';
+    // Find row index
+    const res = await sheetsRequest(`https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/${sheet}!A:A`, 'GET');
+    const rows = res.values || [];
+    const rowIndex = rows.findIndex(r => r[0] === currentEditId);
+
+    if (rowIndex < 0) { showToast('Transaction not found', 'error'); hideLoading(); return; }
+
+    // Update the entire row
+    const updatedRow = [currentEditId, date, person, category, fullDesc, amount.toString(), t.typ, split, note];
     await sheetsRequest(
-      `https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}:batchUpdate`,
-      'POST',
-      {
-        requests: [{
-          deleteDimension: {
-            range: {
-              sheetId: sheetId,
-              dimension: 'ROWS',
-              startIndex: rowIndex,
-              endIndex: rowIndex + 1
-            }
-          }
-        }]
-      }
+      `https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/${sheet}!A${rowIndex+1}:I${rowIndex+1}?valueInputOption=RAW`,
+      'PUT', { values: [updatedRow] }
     );
 
     await loadTransactions();
     updateDashboard();
     filterHistory(state.historyFilter);
-    showToast('Usunięto ✓', 'success');
+    document.getElementById('editModal').style.display = 'none';
+    showToast('Updated! ✓', 'success');
   } catch(e) {
-    console.error('Błąd usuwania:', e);
-    showToast('Błąd usuwania', 'error');
+    console.error('Edit error:', e);
+    showToast('Error updating', 'error');
   }
+  document.getElementById('btnSaveEdit').disabled = false;
   hideLoading();
 }
 
-// ===== NAWIGACJA =====
+// ===== NAVIGATION =====
 function showPage(page) {
-  const pages = ['dashboard', 'add', 'scan', 'history', 'settings'];
-  pages.forEach(p => {
+  ['dashboard','add','scan','history','settings'].forEach(p => {
     const el = document.getElementById('page' + p.charAt(0).toUpperCase() + p.slice(1));
     if (el) el.style.display = p === page ? 'block' : 'none';
     const nav = document.getElementById('nav-' + p);
     if (nav) nav.classList.toggle('active', p === page);
   });
-
   state.currentPage = page;
-
-  if (page === 'history') {
-    filterHistory(state.historyFilter);
-  }
-  if (page === 'dashboard') {
-    updateDashboard();
-  }
+  if (page === 'history') filterHistory(state.historyFilter);
+  if (page === 'dashboard') updateDashboard();
 }
 
-// ===== SELEKTORY FORMULARZA =====
-function selectPerson(person) {
-  state.selectedPerson = person;
-  document.getElementById('btnBartosz').className = 'person-btn' + (person === 'Bartosz' ? ' active-bartosz' : '');
-  document.getElementById('btnSelin').className = 'person-btn' + (person === 'Selin' ? ' active-selin' : '');
+// ===== FORM SELECTORS =====
+function selectPerson(p) {
+  state.selectedPerson = p;
+  document.getElementById('btnBartosz').className = 'person-btn' + (p==='Bartosz'?' active-bartosz':'');
+  document.getElementById('btnSelin').className = 'person-btn' + (p==='Selin'?' active-selin':'');
+}
+function selectType(t) {
+  state.selectedType = t;
+  document.getElementById('btnExpense').className = 'type-btn' + (t==='expense'?' active-expense':'');
+  document.getElementById('btnIncome').className = 'type-btn' + (t==='income'?' active-income':'');
+}
+function selectSplit(s) {
+  state.selectedSplit = s;
+  document.getElementById('btnShared').className = 'split-btn' + (s==='shared'?' active':'');
+  document.getElementById('btnPersonal').className = 'split-btn' + (s==='personal'?' active':'');
+}
+function selectScanPerson(p) {
+  state.scanPerson = p;
+  document.getElementById('scanBtnBartosz').className = 'person-btn' + (p==='Bartosz'?' active-bartosz':'');
+  document.getElementById('scanBtnSelin').className = 'person-btn' + (p==='Selin'?' active-selin':'');
+}
+function selectScanSplit(s) {
+  state.scanSplit = s;
+  document.getElementById('scanBtnShared').className = 'split-btn' + (s==='shared'?' active':'');
+  document.getElementById('scanBtnPersonal').className = 'split-btn' + (s==='personal'?' active':'');
 }
 
-function selectType(type) {
-  state.selectedType = type;
-  document.getElementById('btnWydatek').className = 'type-btn' + (type === 'wydatek' ? ' active-wydatek' : '');
-  document.getElementById('btnPrzychod').className = 'type-btn' + (type === 'przychod' ? ' active-przychod' : '');
-}
-
-function selectSplit(split) {
-  state.selectedSplit = split;
-  document.getElementById('btnWspolne').className = 'split-btn' + (split === 'wspólne' ? ' active' : '');
-  document.getElementById('btnOsobiste').className = 'split-btn' + (split === 'osobiste' ? ' active' : '');
-}
-
-function selectScanPerson(person) {
-  state.scanPerson = person;
-  document.getElementById('scanBtnBartosz').className = 'person-btn' + (person === 'Bartosz' ? ' active-bartosz' : '');
-  document.getElementById('scanBtnSelin').className = 'person-btn' + (person === 'Selin' ? ' active-selin' : '');
-}
-
-function selectScanSplit(split) {
-  state.scanSplit = split;
-  document.getElementById('scanBtnWspolne').className = 'split-btn' + (split === 'wspólne' ? ' active' : '');
-  document.getElementById('scanBtnOsobiste').className = 'split-btn' + (split === 'osobiste' ? ' active' : '');
-}
-
-// ===== USTAWIENIA =====
+// ===== SETTINGS =====
 function saveSettings() {
   const sheetId = document.getElementById('settingsSheetId').value.trim();
-  const anthropicKey = document.getElementById('settingsAnthropicKey').value.trim();
-
-  if (sheetId) {
-    state.sheetId = sheetId;
-    localStorage.setItem('sheetId', sheetId);
-  }
-  if (anthropicKey) {
-    state.anthropicKey = anthropicKey;
-    localStorage.setItem('anthropicKey', anthropicKey);
-  }
-
-  showToast('Ustawienia zapisane ✓', 'success');
+  const key = document.getElementById('settingsAnthropicKey').value.trim();
+  if (sheetId) { state.sheetId = sheetId; localStorage.setItem('sheetId', sheetId); }
+  if (key) { state.anthropicKey = key; localStorage.setItem('anthropicKey', key); }
+  showToast('Settings saved ✓', 'success');
 }
 
-// ===== GOOGLE SHEETS API =====
+// ===== SHEETS API =====
 async function sheetsRequest(url, method, body) {
-  const options = {
-    method,
-    headers: {
-      'Authorization': 'Bearer ' + state.accessToken,
-      'Content-Type': 'application/json'
-    }
-  };
+  const options = { method, headers: { 'Authorization': 'Bearer ' + state.accessToken, 'Content-Type': 'application/json' } };
   if (body) options.body = JSON.stringify(body);
-
   const res = await fetch(url, options);
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error?.message || 'Błąd API');
-  }
+  if (!res.ok) { const err = await res.json(); throw new Error(err.error?.message || 'API error'); }
   return res.json();
 }
 
 // ===== HELPERS =====
-function showToast(msg, type = '') {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.className = 'show' + (type ? ' ' + type : '');
-  setTimeout(() => { toast.className = ''; }, 3000);
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show' + (type?' '+type:'');
+  setTimeout(() => { t.className = ''; }, 3000);
 }
+function showLoading(text='Loading...') { document.getElementById('loadingText').textContent = text; document.getElementById('loadingOverlay').style.display = 'flex'; }
+function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
 
-function showLoading(text = 'Ładowanie...') {
-  document.getElementById('loadingText').textContent = text;
-  document.getElementById('loadingOverlay').style.display = 'flex';
-}
-
-function hideLoading() {
-  document.getElementById('loadingOverlay').style.display = 'none';
-}
-
-
-// ===== WYKRES KOŁOWY =====
-function drawPieChart(sortedCats, total) {
-  const canvas = document.getElementById('pieChart');
-  const legend = document.getElementById('pieLegend');
-  if (!canvas) return;
-
-  const ctx = canvas.getContext('2d');
-  const W = 120, H = 120, cx = 60, cy = 60, r = 52, inner = 32;
-  ctx.clearRect(0, 0, W, H);
-  legend.innerHTML = '';
-
-  if (!sortedCats || sortedCats.length === 0) {
-    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
-    ctx.fillStyle = '#2e2e3e'; ctx.fill();
-    ctx.beginPath(); ctx.arc(cx, cy, inner, 0, Math.PI*2);
-    ctx.fillStyle = '#1a1a22'; ctx.fill();
-    legend.innerHTML = '<div style="color:var(--text3);font-size:13px;">Brak danych</div>';
-    return;
-  }
-
-  let startAngle = -Math.PI / 2;
-  sortedCats.forEach(([cat, val]) => {
-    const slice = (val / total) * Math.PI * 2;
-    const color = CAT_COLORS[cat] || '#7c6af7';
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.arc(cx, cy, r, startAngle, startAngle + slice);
-    ctx.closePath();
-    ctx.fillStyle = color;
-    ctx.fill();
-    startAngle += slice;
-  });
-
-  // Środek (donut)
-  ctx.beginPath(); ctx.arc(cx, cy, inner, 0, Math.PI*2);
-  ctx.fillStyle = '#1a1a22'; ctx.fill();
-
-  // Legenda
-  sortedCats.slice(0, 5).forEach(([cat, val]) => {
-    const pct = Math.round(val / total * 100);
-    const color = CAT_COLORS[cat] || '#7c6af7';
-    legend.innerHTML += `<div class="pie-legend-item">
-      <div class="pie-dot" style="background:${color}"></div>
-      <div class="pie-legend-name">${CAT_ICONS[cat] || ''} ${cat}</div>
-      <div class="pie-legend-val" style="color:${color}">${pct}%</div>
-    </div>`;
-  });
-  if (sortedCats.length > 5) {
-    legend.innerHTML += `<div class="pie-legend-item"><div class="pie-legend-name" style="color:var(--text3)">+${sortedCats.length-5} inne</div></div>`;
-  }
-}
-
-// ===== MODAL SZCZEGÓŁÓW TRANSAKCJI =====
-function showTransDetail(id) {
-  const t = state.transactions.find(x => x.id === id);
-  if (!t) return;
-
-  document.getElementById('modalTitle').textContent = t.opis.split(' | ')[0];
-  document.getElementById('modalSub').textContent = t.data + ' · ' + t.osoba + ' · ' + t.podzial;
-
-  const itemsEl = document.getElementById('modalItems');
-
-  // Parsuj pozycje z opisu (format: "sklep | nazwa 12.50zł, nazwa2 8.00zł")
-  const parts = t.opis.split(' | ');
-  if (parts.length > 1) {
-    const pozycje = parts[1].split(', ').map(p => {
-      const match = p.match(/^(.+?)\s+([\d.]+)zł$/);
-      if (match) return { nazwa: match[1], kwota: parseFloat(match[2]) };
-      return { nazwa: p, kwota: 0 };
-    });
-
-    itemsEl.innerHTML = pozycje.map(p => `
-      <div class="modal-item">
-        <span class="modal-item-name">${p.nazwa}</span>
-        <span class="modal-item-price">−${p.kwota.toFixed(2)} zł</span>
-      </div>
-    `).join('') + `
-      <div class="modal-total">
-        <span>Suma</span>
-        <span>−${t.kwota.toFixed(2)} zł</span>
-      </div>`;
-  } else {
-    itemsEl.innerHTML = `<div class="modal-item"><span>${t.opis}</span><span class="modal-item-price">−${t.kwota.toFixed(2)} zł</span></div>`;
-  }
-
-  document.getElementById('transModal').style.display = 'flex';
-}
-
-function closeModal(e) {
-  if (e.target === document.getElementById('transModal')) {
-    document.getElementById('transModal').style.display = 'none';
-  }
-}
-
-// ===== START =====
-// Pokaż dashboard na start
 showPage('dashboard');
 </script>
 </body>
