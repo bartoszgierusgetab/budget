@@ -109,6 +109,13 @@
   .scan-preview-thumb { flex-shrink: 0; width: 80px; height: 80px; border-radius: 10px; object-fit: cover; border: 2px solid var(--border); }
   .scan-preview-thumb.active { border-color: var(--accent); }
   .scan-add-more { flex-shrink: 0; width: 80px; height: 80px; border-radius: 10px; border: 2px dashed var(--border); display: flex; align-items: center; justify-content: center; font-size: 28px; color: var(--text3); cursor: pointer; }
+  .scan-preview-wrap { flex-shrink: 0; position: relative; width: 80px; height: 80px; }
+  .scan-preview-thumb { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; border: 2px solid var(--border); display: block; }
+  .scan-preview-thumb.active { border-color: var(--accent); }
+  .scan-preview-remove { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; background: var(--red); border: none; border-radius: 50%; color: white; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; }
+  .btn-analyze { width: calc(100% - 32px); margin: 0 16px 12px; background: var(--accent); color: white; border: none; border-radius: 12px; padding: 14px; font-size: 15px; font-weight: 700; cursor: pointer; display: none; }
+  .btn-analyze:active { opacity: 0.85; }
+  .scan-count { text-align: center; font-size: 13px; color: var(--text2); margin: 0 16px 4px; display: none; }
 
   .scan-result { margin: 0 16px 12px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: none; }
   .scan-result-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
@@ -383,6 +390,8 @@
 
     <!-- Multi-image thumbnails -->
     <div class="scan-previews" id="scanPreviews" style="display:none"></div>
+    <div class="scan-count" id="scanCount"></div>
+    <button class="btn-analyze" id="btnAnalyze" onclick="analyzeAllImages()">🔍 Analyze receipt</button>
 
     <div class="loader" id="scanLoader">
       <div class="loader-spinner"></div>
@@ -700,15 +709,39 @@ async function initSheetAndLoad() {
 async function ensureSheetsExist() {
   const res = await sheetsRequest(`https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}`, 'GET');
   const sheets = res.sheets.map(s => s.properties.title);
+
+  // Find the sheet with actual transaction data — prefer 'Transactions', fall back to 'Transakcje'
+  // Pick the one that has the most rows (has real data)
+  let sheetName = 'Transactions';
+  if (sheets.includes('Transactions') && sheets.includes('Transakcje')) {
+    // Check which one has data
+    try {
+      const tRes = await sheetsRequest(`https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/Transactions!A2:A`, 'GET');
+      const plRes = await sheetsRequest(`https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/Transakcje!A2:A`, 'GET');
+      const tCount = (tRes.values || []).length;
+      const plCount = (plRes.values || []).length;
+      sheetName = plCount > tCount ? 'Transakcje' : 'Transactions';
+    } catch(e) {
+      sheetName = 'Transactions';
+    }
+  } else if (sheets.includes('Transakcje')) {
+    sheetName = 'Transakcje';
+  }
+
+  state.activeSheet = sheetName;
+  console.log('Using sheet:', sheetName);
+
+  // Create Transactions sheet if missing
   const toCreate = [];
-  if (!sheets.includes('Transactions')) toCreate.push({ properties: { title: 'Transactions' } });
+  if (!sheets.includes('Transactions') && !sheets.includes('Transakcje')) {
+    toCreate.push({ properties: { title: 'Transactions' } });
+  }
   if (!sheets.includes('Budgets')) toCreate.push({ properties: { title: 'Budgets' } });
   if (toCreate.length > 0) {
     await sheetsRequest(`https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}:batchUpdate`, 'POST', { requests: toCreate.map(s => ({ addSheet: s })) });
   }
-  // Check if Transactions sheet has headers
-  let sheetName = sheets.includes('Transactions') ? 'Transactions' : (sheets.includes('Transakcje') ? 'Transakcje' : 'Transactions');
-  state.activeSheet = sheetName;
+
+  // Ensure headers exist
   const headers = await sheetsRequest(`https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/${sheetName}!A1:I1`, 'GET');
   if (!headers.values || headers.values.length === 0) {
     await sheetsRequest(`https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/${sheetName}!A1:I1?valueInputOption=RAW`, 'PUT',
@@ -769,30 +802,49 @@ function handleImagesUpload(event) {
   const files = Array.from(event.target.files);
   if (!files.length) return;
 
-  state.pendingImages = [];
-  const previewsEl = document.getElementById('scanPreviews');
-  previewsEl.innerHTML = '';
-  previewsEl.style.display = 'flex';
+  // Append to existing images (don't replace)
+  const startIdx = state.pendingImages.length;
 
   document.getElementById('scanResult').style.display = 'none';
   document.getElementById('scanForm').style.display = 'none';
 
   let loaded = 0;
   files.forEach((file, i) => {
+    const idx = startIdx + i;
     const reader = new FileReader();
     reader.onload = (e) => {
-      state.pendingImages[i] = { base64: e.target.result.split(',')[1], mimeType: file.type };
+      state.pendingImages[idx] = { base64: e.target.result.split(',')[1], mimeType: file.type, src: e.target.result };
       loaded++;
-
-      // Thumbnail
-      const img = document.createElement('img');
-      img.src = e.target.result;
-      img.className = 'scan-preview-thumb' + (i === 0 ? ' active' : '');
-      previewsEl.appendChild(img);
-
-      if (loaded === files.length) analyzeAllImages();
+      if (loaded === files.length) renderScanPreviews();
     };
     reader.readAsDataURL(file);
+  });
+  document.getElementById('fileInput').value = '';
+}
+
+function renderScanPreviews() {
+  const previewsEl = document.getElementById('scanPreviews');
+  previewsEl.innerHTML = '';
+  previewsEl.style.display = state.pendingImages.length > 0 ? 'flex' : 'none';
+
+  state.pendingImages.forEach((img, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'scan-preview-wrap';
+
+    const thumb = document.createElement('img');
+    thumb.src = img.src;
+    thumb.className = 'scan-preview-thumb' + (i === 0 ? ' active' : '');
+    wrap.appendChild(thumb);
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'scan-preview-remove';
+    removeBtn.textContent = '×';
+    removeBtn.onclick = () => {
+      state.pendingImages.splice(i, 1);
+      renderScanPreviews();
+    };
+    wrap.appendChild(removeBtn);
+    previewsEl.appendChild(wrap);
   });
 
   // Add more button
@@ -801,6 +853,21 @@ function handleImagesUpload(event) {
   addMore.textContent = '+';
   addMore.onclick = () => document.getElementById('fileInput').click();
   previewsEl.appendChild(addMore);
+
+  // Update count and analyze button
+  const count = state.pendingImages.length;
+  const countEl = document.getElementById('scanCount');
+  const analyzeBtn = document.getElementById('btnAnalyze');
+
+  if (count > 0) {
+    countEl.textContent = count + ' photo' + (count > 1 ? 's' : '') + ' selected';
+    countEl.style.display = 'block';
+    analyzeBtn.style.display = 'block';
+    analyzeBtn.textContent = '🔍 Analyze ' + (count > 1 ? count + ' photos' : 'receipt');
+  } else {
+    countEl.style.display = 'none';
+    analyzeBtn.style.display = 'none';
+  }
 }
 
 async function analyzeAllImages() {
@@ -897,11 +964,14 @@ async function saveScanTransaction() {
     updateDashboard();
     showToast('Receipt saved! ✓', 'success');
     // Reset
+    state.pendingImages = [];
+    renderScanPreviews();
     document.getElementById('scanResult').style.display = 'none';
-    document.getElementById('scanPreviews').style.display = 'none';
     document.getElementById('scanForm').style.display = 'none';
+    document.getElementById('scanCount').style.display = 'none';
+    document.getElementById('btnAnalyze').style.display = 'none';
     document.getElementById('fileInput').value = '';
-    state.scanTotal = 0; state.pendingImages = [];
+    state.scanTotal = 0;
     showPage('dashboard');
   } catch(e) { console.error(e); showToast('Error saving', 'error'); }
   document.getElementById('btnSaveScan').disabled = false;
