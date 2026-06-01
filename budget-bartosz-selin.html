@@ -372,6 +372,28 @@
   }
   .empty-icon { font-size: 40px; margin-bottom: 12px; }
 
+  .btn-delete {
+    background: none; border: none; color: var(--text3);
+    font-size: 18px; cursor: pointer; padding: 6px; flex-shrink: 0;
+    border-radius: 6px; transition: color 0.2s;
+  }
+  .btn-delete:active { color: var(--red); }
+
+  .pie-wrap { display: flex; align-items: center; gap: 16px; padding: 4px 0; }
+  .pie-legend { flex: 1; }
+  .pie-legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; font-size: 12px; }
+  .pie-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .pie-legend-name { flex: 1; color: var(--text2); }
+  .pie-legend-val { font-weight: 600; font-size: 12px; }
+
+  .history-chart-wrap { padding: 0 16px 4px; }
+  .hist-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .hist-bar-label { font-size: 12px; min-width: 72px; color: var(--text2); }
+  .hist-bar-track { flex: 1; height: 20px; background: var(--bg3); border-radius: 6px; overflow: hidden; }
+  .hist-bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; min-width: 2px; }
+  .hist-bar-fill span { font-size: 10px; font-weight: 600; color: white; white-space: nowrap; }
+  .hist-bar-total { font-size: 11px; color: var(--text2); min-width: 52px; text-align: right; }
+
   /* ===== USTAWIENIA ===== */
   #pageSettings { display: none; }
 
@@ -530,7 +552,12 @@
 
     <div class="card">
       <div class="card-title">Wydatki per kategoria</div>
-      <div id="catBars"></div>
+      <div class="pie-wrap">
+        <div class="pie-canvas-wrap">
+          <canvas id="pieChart" width="120" height="120"></canvas>
+        </div>
+        <div class="pie-legend" id="pieLegend"></div>
+      </div>
     </div>
 
     <div class="card">
@@ -707,6 +734,12 @@
       <button class="filter-chip" onclick="filterHistory('Rozrywka')" id="filter-Rozrywka">🎉 Rozrywka</button>
     </div>
 
+    <div class="history-chart-wrap" id="historyChartWrap" style="display:none;">
+      <div class="card" style="margin: 0 0 8px;">
+        <div class="card-title">Suma per kategoria</div>
+        <div id="historyBars"></div>
+      </div>
+    </div>
     <div class="trans-list" id="transList"></div>
   </div>
 
@@ -1124,6 +1157,7 @@ function displayScanResult(data) {
 
   // Ustaw dane w formularzu
   state.scanTotal = suma;
+  state.scanPozycje = data.pozycje || [];
   state.scanDescription = data.opis || data.sklep || 'Zakupy';
 
   document.getElementById('scanOpis').value = state.scanDescription;
@@ -1148,12 +1182,19 @@ async function saveScanTransaction() {
     return;
   }
 
+  // Opis z listą pozycji
+  const pozycjeOpis = state.scanPozycje && state.scanPozycje.length > 0
+    ? state.scanPozycje.map(p => p.nazwa + ' ' + p.kwota.toFixed(2) + 'zł').join(', ')
+    : '';
+  const opisGlowny = document.getElementById('scanOpis').value || state.scanDescription;
+  const opisFull = pozycjeOpis ? opisGlowny + ' | ' + pozycjeOpis : opisGlowny;
+
   const row = [
     Date.now().toString(),
     new Date().toISOString().split('T')[0],
     state.scanPerson,
     document.getElementById('scanKategoria').value,
-    document.getElementById('scanOpis').value || state.scanDescription,
+    opisFull,
     state.scanTotal.toString(),
     'wydatek',
     state.scanSplit,
@@ -1246,35 +1287,14 @@ function updateDashboard() {
     document.getElementById('debtDesc').textContent = 'Bartosz jest winny Selin';
   }
 
-  // Wykres kategorii
+  // Wykres kołowy
   const catSums = {};
   monthTrans.forEach(t => {
     catSums[t.kategoria] = (catSums[t.kategoria] || 0) + t.kwota;
   });
 
   const sortedCats = Object.entries(catSums).sort((a, b) => b[1] - a[1]);
-  const maxVal = sortedCats.length > 0 ? sortedCats[0][1] : 1;
-
-  const catEl = document.getElementById('catBars');
-  catEl.innerHTML = '';
-
-  if (sortedCats.length === 0) {
-    catEl.innerHTML = '<div style="color: var(--text3); font-size: 14px; text-align: center; padding: 16px;">Brak wydatków w tym miesiącu</div>';
-  } else {
-    sortedCats.forEach(([cat, val]) => {
-      const pct = (val / maxVal * 100).toFixed(1);
-      const color = CAT_COLORS[cat] || '#7c6af7';
-      catEl.innerHTML += `
-        <div class="cat-bar-row">
-          <div class="cat-bar-label">${CAT_ICONS[cat] || '📦'} ${cat}</div>
-          <div class="cat-bar-track">
-            <div class="cat-bar-fill" style="width:${pct}%; background:${color}"></div>
-          </div>
-          <div class="cat-bar-val">${val.toFixed(2)} zł</div>
-        </div>
-      `;
-    });
-  }
+  drawPieChart(sortedCats, totalSum);
 
   // Ostatnie 5 transakcji
   const recent = [...state.transactions]
@@ -1294,7 +1314,6 @@ function changeMonth(dir) {
 function filterHistory(filter) {
   state.historyFilter = filter;
 
-  // Aktywny chip
   document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
   const chip = document.getElementById('filter-' + filter);
   if (chip) chip.classList.add('active');
@@ -1308,6 +1327,40 @@ function filterHistory(filter) {
   }
 
   renderTransactions(filtered, 'transList');
+
+  // Wykres słupkowy w historii
+  drawHistoryBars(filtered);
+}
+
+function drawHistoryBars(trans) {
+  const wrap = document.getElementById('historyChartWrap');
+  const barsEl = document.getElementById('historyBars');
+
+  const wydatki = trans.filter(t => t.typ === 'wydatek');
+  if (wydatki.length === 0) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+
+  const catSums = {};
+  wydatki.forEach(t => {
+    catSums[t.kategoria] = (catSums[t.kategoria] || 0) + t.kwota;
+  });
+
+  const sorted = Object.entries(catSums).sort((a, b) => b[1] - a[1]);
+  const maxVal = sorted[0][1];
+
+  barsEl.innerHTML = sorted.map(([cat, val]) => {
+    const pct = Math.round(val / maxVal * 100);
+    const color = CAT_COLORS[cat] || '#7c6af7';
+    return `<div class="hist-bar-row">
+      <div class="hist-bar-label">${CAT_ICONS[cat] || '📦'} ${cat}</div>
+      <div class="hist-bar-track">
+        <div class="hist-bar-fill" style="width:${pct}%; background:${color}">
+          ${pct > 15 ? '<span>' + val.toFixed(0) + ' zł</span>' : ''}
+        </div>
+      </div>
+      <div class="hist-bar-total">${val.toFixed(2)} zł</div>
+    </div>`;
+  }).join('');
 }
 
 function renderTransactions(trans, targetId) {
@@ -1317,8 +1370,11 @@ function renderTransactions(trans, targetId) {
     return;
   }
 
+  // Pokaż delete tylko w historii
+  const showDelete = targetId === 'transList';
+
   el.innerHTML = trans.map(t => `
-    <div class="trans-item">
+    <div class="trans-item" id="row-${t.id}">
       <div class="trans-icon" style="background: ${CAT_COLORS[t.kategoria] || '#2e2e3e'}22;">
         ${CAT_ICONS[t.kategoria] || '📦'}
       </div>
@@ -1330,8 +1386,66 @@ function renderTransactions(trans, targetId) {
         <div class="trans-amount ${t.typ}">${t.typ === 'wydatek' ? '−' : '+'}${t.kwota.toFixed(2)} zł</div>
         <div class="trans-person ${t.osoba.toLowerCase()}">${t.osoba}</div>
       </div>
+      ${showDelete ? `<button class="btn-delete" onclick="deleteTransaction('${t.id}')" title="Usuń">🗑️</button>` : ''}
     </div>
   `).join('');
+}
+
+// ===== USUWANIE TRANSAKCJI =====
+async function deleteTransaction(id) {
+  if (!confirm('Usunąć tę transakcję?')) return;
+
+  showLoading('Usuwanie...');
+  try {
+    // Znajdź numer wiersza w Sheets (wiersze od 2, bo 1 to nagłówek)
+    const res = await sheetsRequest(
+      `https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}/values/Transakcje!A:A`,
+      'GET'
+    );
+    const rows = res.values || [];
+    const rowIndex = rows.findIndex(r => r[0] === id);
+
+    if (rowIndex < 0) {
+      showToast('Nie znaleziono transakcji', 'error');
+      hideLoading();
+      return;
+    }
+
+    // Pobierz sheetId arkusza "Transakcje"
+    const meta = await sheetsRequest(
+      `https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}`,
+      'GET'
+    );
+    const sheet = meta.sheets.find(s => s.properties.title === 'Transakcje');
+    const sheetId = sheet.properties.sheetId;
+
+    // Usuń wiersz przez batchUpdate
+    await sheetsRequest(
+      `https://sheets.googleapis.com/v4/spreadsheets/${state.sheetId}:batchUpdate`,
+      'POST',
+      {
+        requests: [{
+          deleteDimension: {
+            range: {
+              sheetId: sheetId,
+              dimension: 'ROWS',
+              startIndex: rowIndex,
+              endIndex: rowIndex + 1
+            }
+          }
+        }]
+      }
+    );
+
+    await loadTransactions();
+    updateDashboard();
+    filterHistory(state.historyFilter);
+    showToast('Usunięto ✓', 'success');
+  } catch(e) {
+    console.error('Błąd usuwania:', e);
+    showToast('Błąd usuwania', 'error');
+  }
+  hideLoading();
 }
 
 // ===== NAWIGACJA =====
@@ -1436,6 +1550,59 @@ function showLoading(text = 'Ładowanie...') {
 
 function hideLoading() {
   document.getElementById('loadingOverlay').style.display = 'none';
+}
+
+
+// ===== WYKRES KOŁOWY =====
+function drawPieChart(sortedCats, total) {
+  const canvas = document.getElementById('pieChart');
+  const legend = document.getElementById('pieLegend');
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  const W = 120, H = 120, cx = 60, cy = 60, r = 52, inner = 32;
+  ctx.clearRect(0, 0, W, H);
+  legend.innerHTML = '';
+
+  if (!sortedCats || sortedCats.length === 0) {
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
+    ctx.fillStyle = '#2e2e3e'; ctx.fill();
+    ctx.beginPath(); ctx.arc(cx, cy, inner, 0, Math.PI*2);
+    ctx.fillStyle = '#1a1a22'; ctx.fill();
+    legend.innerHTML = '<div style="color:var(--text3);font-size:13px;">Brak danych</div>';
+    return;
+  }
+
+  let startAngle = -Math.PI / 2;
+  sortedCats.forEach(([cat, val]) => {
+    const slice = (val / total) * Math.PI * 2;
+    const color = CAT_COLORS[cat] || '#7c6af7';
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, startAngle, startAngle + slice);
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+    startAngle += slice;
+  });
+
+  // Środek (donut)
+  ctx.beginPath(); ctx.arc(cx, cy, inner, 0, Math.PI*2);
+  ctx.fillStyle = '#1a1a22'; ctx.fill();
+
+  // Legenda
+  sortedCats.slice(0, 5).forEach(([cat, val]) => {
+    const pct = Math.round(val / total * 100);
+    const color = CAT_COLORS[cat] || '#7c6af7';
+    legend.innerHTML += `<div class="pie-legend-item">
+      <div class="pie-dot" style="background:${color}"></div>
+      <div class="pie-legend-name">${CAT_ICONS[cat] || ''} ${cat}</div>
+      <div class="pie-legend-val" style="color:${color}">${pct}%</div>
+    </div>`;
+  });
+  if (sortedCats.length > 5) {
+    legend.innerHTML += `<div class="pie-legend-item"><div class="pie-legend-name" style="color:var(--text3)">+${sortedCats.length-5} inne</div></div>`;
+  }
 }
 
 // ===== START =====
