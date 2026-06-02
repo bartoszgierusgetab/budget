@@ -73,13 +73,6 @@
   .form-input:focus, .form-select:focus { border-color: var(--accent); }
   .form-select { cursor: pointer; }
 
-  /* Voice note button */
-  .input-with-mic { position: relative; }
-  .input-with-mic .form-input { padding-right: 48px; }
-  .btn-mic { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 20px; cursor: pointer; padding: 4px; color: var(--text3); transition: color 0.2s; }
-  .btn-mic.recording { color: var(--red); animation: pulse 1s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-
   .person-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 16px 12px; }
   .person-btn { padding: 12px; border-radius: 10px; border: 2px solid var(--border); background: var(--bg2); color: var(--text2); font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: center; }
   .person-btn.active-bartosz { border-color: var(--bartosz); color: var(--bartosz); background: #1e1a3a; }
@@ -154,6 +147,29 @@
   .empty-icon { font-size: 40px; margin-bottom: 12px; }
   .btn-delete { background: none; border: none; color: var(--text3); font-size: 18px; cursor: pointer; padding: 6px; flex-shrink: 0; border-radius: 6px; }
   .btn-delete:active { color: var(--red); }
+
+  /* HISTORY SLIDER */
+  .hist-slider-wrap { margin: 0 16px 12px; position: relative; }
+  .hist-slider-track { overflow: hidden; border-radius: var(--radius); }
+  .hist-slides { display: flex; transition: transform 0.3s ease; }
+  .hist-slide { min-width: 100%; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+  .hist-slide-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text2); margin-bottom: 12px; }
+  .hist-slider-nav { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+  .hist-nav-btn { background: var(--bg3); border: 1px solid var(--border); color: var(--text); border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; flex-shrink: 0; }
+  .hist-dots { display: flex; gap: 6px; }
+  .hist-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); transition: background 0.2s; }
+  .hist-dot.active { background: var(--accent2); }
+
+  /* Search bar */
+  .search-wrap { padding: 8px 16px 4px; position: relative; }
+  .search-input { width: 100%; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 15px; padding: 10px 36px 10px 14px; outline: none; -webkit-appearance: none; }
+  .search-input:focus { border-color: var(--accent); }
+  .search-clear { position: absolute; right: 24px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text3); font-size: 16px; cursor: pointer; display: none; padding: 4px; }
+
+  /* Category headers in history */
+  .cat-section-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 0 6px; border-bottom: 1px solid var(--border); margin-bottom: 2px; }
+  .cat-section-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+  .cat-section-meta { font-size: 11px; color: var(--text2); }
 
   /* HISTORY BARS */
   .history-chart-wrap { padding: 0 16px 4px; }
@@ -356,10 +372,7 @@
 
     <div class="form-group">
       <label class="form-label">Description</label>
-      <div class="input-with-mic">
-        <input type="text" class="form-input" id="inputDesc" placeholder="e.g. Frisco — weekly groceries">
-        <button class="btn-mic" id="micBtn" onclick="toggleVoice('inputDesc','micBtn')" title="Voice note (English)">🎤</button>
-      </div>
+<input type="text" class="form-input" id="inputDesc" placeholder="e.g. Frisco — weekly groceries">
     </div>
 
     <div class="form-group">
@@ -369,10 +382,7 @@
 
     <div class="form-group">
       <label class="form-label">Note (optional)</label>
-      <div class="input-with-mic">
-        <input type="text" class="form-input" id="inputNote" placeholder="Additional info...">
-        <button class="btn-mic" id="micBtnNote" onclick="toggleVoice('inputNote','micBtnNote')" title="Voice note (English)">🎤</button>
-      </div>
+<input type="text" class="form-input" id="inputNote" placeholder="Additional info...">
     </div>
 
     <button class="btn-primary" onclick="addTransaction()" id="btnAdd">Save transaction</button>
@@ -443,12 +453,47 @@
       <button class="filter-chip" onclick="filterHistory('Bartosz')" id="filter-Bartosz">Bartosz</button>
       <button class="filter-chip" onclick="filterHistory('Selin')" id="filter-Selin">Selin</button>
     </div>
-    <div class="history-chart-wrap" id="historyChartWrap" style="display:none">
-      <div class="card" style="margin:0 0 8px">
-        <div class="card-title">Spending by category</div>
-        <div id="historyBars"></div>
+    <!-- SEARCH -->
+    <div class="search-wrap">
+      <input type="text" class="search-input" id="histSearch" placeholder="🔍  Search transactions..." oninput="searchHistory(this.value)" autocomplete="off" autocorrect="off" spellcheck="false">
+      <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+    </div>
+
+    <!-- HISTORY SLIDER: Weekly | Pie | Savings -->
+    <div class="hist-slider-wrap" id="histSliderWrap" style="display:none">
+      <div class="hist-slider-track">
+        <div class="hist-slides" id="histSlides">
+          <!-- Slide 0: Weekly -->
+          <div class="hist-slide">
+            <div class="hist-slide-title">Weekly spending</div>
+            <div id="historyBars"></div>
+          </div>
+          <!-- Slide 1: Pie -->
+          <div class="hist-slide">
+            <div class="hist-slide-title">Spending by category</div>
+            <div class="pie-wrap">
+              <div><canvas id="histPieChart" width="110" height="110"></canvas></div>
+              <div class="pie-legend" id="histPieLegend"></div>
+            </div>
+          </div>
+          <!-- Slide 2: Savings -->
+          <div class="hist-slide">
+            <div class="hist-slide-title">🏷️ Monthly savings</div>
+            <div id="historySavingsBars"></div>
+          </div>
+        </div>
+      </div>
+      <div class="hist-slider-nav">
+        <button class="hist-nav-btn" onclick="slideHist(-1)">‹</button>
+        <div class="hist-dots">
+          <div class="hist-dot active" id="hdot-0"></div>
+          <div class="hist-dot" id="hdot-1"></div>
+          <div class="hist-dot" id="hdot-2"></div>
+        </div>
+        <button class="hist-nav-btn" onclick="slideHist(1)">›</button>
       </div>
     </div>
+
     <div class="trans-list" id="transList"></div>
   </div>
 
@@ -1116,6 +1161,8 @@ function changeMonth(dir) {
 }
 
 // ===== HISTORY =====
+let histSlideIndex = 0;
+
 function filterHistory(filter) {
   state.historyFilter = filter;
   document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
@@ -1125,38 +1172,225 @@ function filterHistory(filter) {
   let filtered = [...state.transactions].sort((a,b) => b.id-a.id);
   if (filter === 'Bartosz' || filter === 'Selin') filtered = filtered.filter(t => t.osoba === filter);
 
-  renderTransactions(filtered, 'transList');
-  drawWeeklyBars(filtered);
+  renderTransactionsByCategory(filtered, 'transList');
+  updateHistSlider(filtered);
 }
 
-function drawWeeklyBars(trans) {
-  const wrap = document.getElementById('historyChartWrap');
-  const barsEl = document.getElementById('historyBars');
+function updateHistSlider(trans) {
+  const wrap = document.getElementById('histSliderWrap');
   const expenses = trans.filter(t => t.typ === 'expense' && t.data);
   if (!expenses.length) { wrap.style.display = 'none'; return; }
   wrap.style.display = 'block';
 
-  // Group by week (W1..W4+) within each month
+  drawWeeklyBars(expenses);
+  drawHistPie(expenses);
+  drawMonthlySavings();
+  goToSlide(histSlideIndex); // keep current slide
+}
+
+function slideHist(dir) {
+  histSlideIndex = Math.max(0, Math.min(2, histSlideIndex + dir));
+  goToSlide(histSlideIndex);
+}
+
+function goToSlide(idx) {
+  histSlideIndex = idx;
+  const slides = document.getElementById('histSlides');
+  if (slides) slides.style.transform = `translateX(-${idx * 100}%)`;
+  [0,1,2].forEach(i => {
+    const dot = document.getElementById('hdot-' + i);
+    if (dot) dot.className = 'hist-dot' + (i === idx ? ' active' : '');
+  });
+}
+
+function drawWeeklyBars(expenses) {
+  const barsEl = document.getElementById('historyBars');
+  if (!barsEl) return;
   const weekSums = { 'W1': 0, 'W2': 0, 'W3': 0, 'W4': 0 };
   expenses.forEach(t => {
     const day = new Date(t.data).getDate();
     const week = day <= 7 ? 'W1' : day <= 14 ? 'W2' : day <= 21 ? 'W3' : 'W4';
     weekSums[week] += t.kwota;
   });
-
   const maxVal = Math.max(...Object.values(weekSums), 1);
   const weekLabels = { 'W1': 'Week 1', 'W2': 'Week 2', 'W3': 'Week 3', 'W4': 'Week 4' };
-
   barsEl.innerHTML = Object.entries(weekSums).map(([week, val]) => {
     const pct = Math.round(val/maxVal*100);
-    const color = '#7c6af7';
     const opacity = val > 0 ? '1' : '0.3';
     return `<div class="hist-bar-row">
       <div class="hist-bar-label" style="opacity:${opacity}">${weekLabels[week]}</div>
-      <div class="hist-bar-track"><div class="hist-bar-fill" style="width:${pct}%;background:${color};opacity:${opacity}">${pct>15?'<span>'+val.toFixed(0)+' PLN</span>':''}</div></div>
+      <div class="hist-bar-track"><div class="hist-bar-fill" style="width:${pct}%;background:#7c6af7;opacity:${opacity}">${pct>15?'<span>'+val.toFixed(0)+' PLN</span>':''}</div></div>
       <div class="hist-bar-total" style="opacity:${opacity}">${val > 0 ? val.toFixed(2)+' PLN' : '—'}</div>
     </div>`;
   }).join('');
+}
+
+function drawHistPie(expenses) {
+  const canvas = document.getElementById('histPieChart');
+  const legend = document.getElementById('histPieLegend');
+  if (!canvas || !legend) return;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, 110, 110);
+  legend.innerHTML = '';
+
+  // Build cat sums from packed format
+  const catSums = {};
+  expenses.forEach(t => {
+    const opis = t.opis || '';
+    if (opis.includes(' || ')) {
+      const packed = opis.split(' || ')[1] || '';
+      packed.split('|').forEach(p => {
+        const parts = p.split(':');
+        if (parts.length >= 3) {
+          const cat = parts[1], amount = parseFloat(parts[2]) || 0;
+          if (cat && amount > 0) catSums[cat] = (catSums[cat] || 0) + amount;
+        }
+      });
+    } else {
+      catSums[t.kategoria] = (catSums[t.kategoria] || 0) + t.kwota;
+    }
+  });
+
+  const sorted = Object.entries(catSums).sort((a,b) => b[1]-a[1]);
+  const total = sorted.reduce((s,[,v]) => s+v, 0);
+  if (!total) { legend.innerHTML = '<div style="color:var(--text3);font-size:12px">No data</div>'; return; }
+
+  let angle = -Math.PI/2;
+  sorted.forEach(([cat, val]) => {
+    const slice = (val/total)*Math.PI*2;
+    ctx.beginPath(); ctx.moveTo(55,55); ctx.arc(55,55,48,angle,angle+slice); ctx.closePath();
+    ctx.fillStyle = CAT_COLORS[cat]||'#7c6af7'; ctx.fill();
+    angle += slice;
+  });
+  ctx.beginPath(); ctx.arc(55,55,28,0,Math.PI*2); ctx.fillStyle='#1a1a22'; ctx.fill();
+
+  sorted.slice(0,5).forEach(([cat, val]) => {
+    const pct = Math.round(val/total*100);
+    const color = CAT_COLORS[cat]||'#7c6af7';
+    legend.innerHTML += `<div class="pie-legend-item">
+      <div class="pie-dot" style="background:${color}"></div>
+      <div class="pie-legend-name">${CAT_ICONS[cat]||''} ${cat}</div>
+      <div class="pie-legend-val" style="color:${color}">${pct}%</div>
+    </div>`;
+  });
+}
+
+function drawMonthlySavings() {
+  const el = document.getElementById('historySavingsBars');
+  if (!el) return;
+
+  // Collect savings per month from all transactions
+  const monthlySavings = {};
+  state.transactions.forEach(t => {
+    if (!t.notatka || !t.notatka.includes('Discounts:')) return;
+    const d = new Date(t.data);
+    if (isNaN(d)) return;
+    const key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+    const label = MONTHS[d.getMonth()].substring(0,3) + ' ' + d.getFullYear();
+    if (!monthlySavings[key]) monthlySavings[key] = { label, total: 0 };
+    // Extract discount amounts
+    const matches = [...t.notatka.matchAll(/-?([\d.]+)PLN/g)];
+    matches.forEach(m => { monthlySavings[key].total += parseFloat(m[1]) || 0; });
+  });
+
+  const sorted = Object.entries(monthlySavings).sort((a,b) => a[0].localeCompare(b[0]));
+
+  if (!sorted.length) {
+    el.innerHTML = '<div style="color:var(--text3);font-size:13px;text-align:center;padding:16px">No discounts recorded yet</div>';
+    return;
+  }
+
+  const maxVal = Math.max(...sorted.map(([,v]) => v.total), 1);
+  el.innerHTML = sorted.map(([, {label, total}]) => {
+    const pct = Math.round(total/maxVal*100);
+    return `<div class="hist-bar-row">
+      <div class="hist-bar-label" style="color:var(--green)">${label}</div>
+      <div class="hist-bar-track"><div class="hist-bar-fill" style="width:${pct}%;background:var(--green)">${pct>15?'<span>'+total.toFixed(0)+' PLN</span>':''}</div></div>
+      <div class="hist-bar-total" style="color:var(--green)">${total.toFixed(2)} PLN</div>
+    </div>`;
+  }).join('');
+}
+
+function renderTransactionsByCategory(trans, targetId) {
+  const el = document.getElementById(targetId);
+  if (!trans || !trans.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">💸</div>No transactions</div>';
+    return;
+  }
+
+  // Group by category
+  const groups = {};
+  const discounts = [];
+
+  trans.forEach(t => {
+    // Extract discount as virtual entry
+    if (t.notatka && t.notatka.includes('Discounts:')) {
+      const matches = [...t.notatka.matchAll(/-?([\d.]+)PLN/g)];
+      const total = matches.reduce((s,m) => s + (parseFloat(m[1])||0), 0);
+      if (total > 0) {
+        discounts.push({ ...t, discountAmount: total });
+      }
+    }
+    const cat = t.kategoria || 'Other';
+    if (!groups[cat]) groups[cat] = [];
+    groups[cat].push(t);
+  });
+
+  let html = '';
+
+  // Render each category group
+  Object.entries(groups).sort((a,b) => {
+    const sumA = a[1].reduce((s,t) => s+t.kwota, 0);
+    const sumB = b[1].reduce((s,t) => s+t.kwota, 0);
+    return sumB - sumA;
+  }).forEach(([cat, items]) => {
+    const total = items.reduce((s,t) => s+t.kwota, 0);
+    const color = CAT_COLORS[cat] || '#7c6af7';
+    html += `<div class="cat-section-header">
+      <span class="cat-section-label" style="color:${color}">${CAT_ICONS[cat]||'📦'} ${cat}</span>
+      <span class="cat-section-meta">${items.length} · ${total.toFixed(2)} PLN</span>
+    </div>`;
+    items.forEach(t => {
+      const hasItems = t.opis && t.opis.includes(' || ');
+      const typeClass = t.typ === 'income' ? 'income' : 'expense';
+      html += `<div class="trans-item" id="row-${t.id}" onclick="showTransDetail('${t.id}')" style="cursor:pointer">
+        <div class="trans-icon" style="background:${color}22">${CAT_ICONS[t.kategoria]||'📦'}</div>
+        <div class="trans-info">
+          <div class="trans-name">${(t.opis||t.kategoria).split(' || ')[0].split(' | ')[0]}</div>
+          <div class="trans-meta">${t.data} · ${t.podzial}${hasItems?' · 👆 details':' · 👆 edit'}</div>
+        </div>
+        <div class="trans-right">
+          <div class="trans-amount ${typeClass}">−${t.kwota.toFixed(2)} PLN</div>
+          <div class="trans-person ${t.osoba.toLowerCase()}">${t.osoba}</div>
+        </div>
+        <button class="btn-delete" onclick="event.stopPropagation();deleteTransaction('${t.id}')" title="Delete">🗑️</button>
+      </div>`;
+    });
+  });
+
+  // Render discounts section
+  if (discounts.length) {
+    const totalSaved = discounts.reduce((s,d) => s+d.discountAmount, 0);
+    html += `<div class="cat-section-header">
+      <span class="cat-section-label" style="color:var(--green)">🏷️ Discounts</span>
+      <span class="cat-section-meta">${discounts.length} · saved ${totalSaved.toFixed(2)} PLN</span>
+    </div>`;
+    discounts.forEach(d => {
+      html += `<div class="trans-item" onclick="showTransDetail('${d.id}')" style="cursor:pointer">
+        <div class="trans-icon" style="background:var(--green)22">🏷️</div>
+        <div class="trans-info">
+          <div class="trans-name">${(d.opis||'').split(' || ')[0]}</div>
+          <div class="trans-meta">${d.data} · coupon/discount</div>
+        </div>
+        <div class="trans-right">
+          <div class="trans-amount income">+${d.discountAmount.toFixed(2)} PLN</div>
+          <div class="trans-person ${d.osoba.toLowerCase()}">${d.osoba}</div>
+        </div>
+      </div>`;
+    });
+  }
+
+  el.innerHTML = html || '<div class="empty-state"><div class="empty-icon">💸</div>No transactions</div>';
 }
 
 function renderTransactions(trans, targetId) {
@@ -1204,32 +1438,6 @@ async function deleteTransaction(id) {
   hideLoading();
 }
 
-// ===== VOICE NOTE =====
-let recognition = null;
-function toggleVoice(inputId, btnId) {
-  const btn = document.getElementById(btnId);
-  if (recognition) {
-    recognition.stop(); recognition = null;
-    btn.classList.remove('recording'); btn.textContent = '🎤';
-    return;
-  }
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) { showToast('Voice not supported in this browser', 'error'); return; }
-  recognition = new SR();
-  recognition.lang = 'en-US';
-  recognition.continuous = false;
-  recognition.interimResults = false;
-  recognition.onresult = (e) => {
-    const text = e.results[0][0].transcript;
-    document.getElementById(inputId).value = text;
-    showToast('Got it: "' + text + '"', 'success');
-  };
-  recognition.onerror = (e) => { showToast('Voice error: ' + e.error, 'error'); };
-  recognition.onend = () => { recognition = null; btn.classList.remove('recording'); btn.textContent = '🎤'; };
-  recognition.start();
-  btn.classList.add('recording'); btn.textContent = '🔴';
-  showToast('Listening... (English)', '');
-}
 
 // ===== PIE CHART =====
 // Store pie slices for click detection
@@ -1451,6 +1659,41 @@ async function saveEdit() {
   hideLoading();
 }
 
+// ===== SEARCH =====
+function searchHistory(query) {
+  const clearBtn = document.getElementById('searchClear');
+  const slider = document.getElementById('histSliderWrap');
+  const q = query.trim().toLowerCase();
+
+  if (q.length === 0) {
+    clearBtn.style.display = 'none';
+    // Restore normal filtered view
+    filterHistory(state.historyFilter);
+    return;
+  }
+
+  clearBtn.style.display = 'block';
+  slider.style.display = 'none'; // hide charts when searching
+
+  // Search in description, category, person, amount
+  const results = state.transactions.filter(t => {
+    const desc = (t.opis || '').toLowerCase();
+    const cat = (t.kategoria || '').toLowerCase();
+    const person = (t.osoba || '').toLowerCase();
+    const amount = t.kwota.toString();
+    return desc.includes(q) || cat.includes(q) || person.includes(q) || amount.includes(q);
+  }).sort((a,b) => b.id - a.id);
+
+  renderTransactionsByCategory(results, 'transList');
+}
+
+function clearSearch() {
+  const input = document.getElementById('histSearch');
+  input.value = '';
+  document.getElementById('searchClear').style.display = 'none';
+  filterHistory(state.historyFilter);
+}
+
 // ===== NAVIGATION =====
 function showPage(page) {
   ['dashboard','add','scan','history','settings'].forEach(p => {
@@ -1460,7 +1703,13 @@ function showPage(page) {
     if (nav) nav.classList.toggle('active', p === page);
   });
   state.currentPage = page;
-  if (page === 'history') filterHistory(state.historyFilter);
+  if (page === 'history') {
+    const searchEl = document.getElementById('histSearch');
+    if (searchEl) searchEl.value = '';
+    const clearBtn = document.getElementById('searchClear');
+    if (clearBtn) clearBtn.style.display = 'none';
+    filterHistory(state.historyFilter);
+  }
   if (page === 'dashboard') updateDashboard();
 }
 
